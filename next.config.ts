@@ -1,10 +1,20 @@
 import type { NextConfig } from 'next'
 
-// Veloxous investor app. Full Next.js app (Node runtime) — deliberately NOT a
-// static export, so Server Components + real Soroban/Stellar data fetching can be
-// added per route later without restructuring.
+// Veloxous investor app. Full Next.js app with Image Optimization configured.
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.amazonaws.com',
+      },
+    ],
+  },
 }
 
 export default nextConfig
