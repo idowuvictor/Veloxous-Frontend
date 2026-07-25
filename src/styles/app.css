@@ -30,7 +30,6 @@
   }
 }
 
-/* --- Marketplace 2-Column Grid Architecture (Cards Left & Sidebar Right) --- */
 .hb-marketplace-layout {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -40,7 +39,7 @@
 }
 
 .hb-main-products-area {
-  min-width: 0; /* Prevents grid blowout */
+  min-width: 0; 
 }
 
 .hb-filter-sidebar-wrapper {
@@ -94,7 +93,6 @@
   }
 }
 
-/* --- Tailwind CSS Responsive Grid Architecture (4 Cards Per Row) -------- */
 .animate-pulse {
   animation: hb-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -157,7 +155,6 @@
   }
 }
 
-/* --- Section grids (desktop values mirror the source prototype) ----------- */
 .hb-hero-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -244,7 +241,6 @@
   }
 }
 
-/* --- Technician Profile & Wizard Responsive Layout Rules --------------- */
 .hb-modal-dialog {
   background: var(--surface);
   border: 1px solid var(--ink-12);
@@ -268,37 +264,8 @@
     border-radius: 0 !important;
     padding: 24px 16px !important;
   }
-
-  .hb-tech-header-body {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    margin-top: -40px !important;
-    gap: 16px !important;
-  }
-
-  .hb-tech-cta-group {
-    width: 100% !important;
-    order: 1 !important; /* Move CTA buttons above skills & gauge on mobile */
-  }
-
-  .hb-tech-cta-group button {
-    flex: 1 !important;
-    width: 100% !important;
-  }
-
-  .hb-tech-skills-group {
-    order: 2 !important; /* Move Skills section below Request CTA on mobile */
-    width: 100% !important;
-  }
-
-  .hb-tech-gauge-group {
-    order: 3 !important; /* Move Metrics Summary below Request CTA on mobile */
-    width: 100% !important;
-    justify-content: flex-start !important;
-  }
 }
 
-/* Pill-shaped focus rings for IconButton and Tag — override base radius */
 .hb-icon-btn:focus-visible,
 .hb-tag:focus-visible {
   outline: 2px solid var(--focus-ring);

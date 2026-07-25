@@ -1,10 +1,6 @@
 'use client'
 
-/**
- * ProductCardSkeleton:
- * Matches the exact layout, padding, aspect ratio, and height of DeviceCard (190px image)
- * for 4-card rows to prevent Cumulative Layout Shift (CLS) during fetches.
- */
+
 export function ProductCardSkeleton() {
   return (
     <div
@@ -17,10 +13,10 @@ export function ProductCardSkeleton() {
         boxShadow: 'var(--shadow-sm)',
         display: 'flex',
         flexDirection: 'column',
-        height: 410, // Matches exact updated DeviceCard height
+        height: 410, 
       }}
     >
-      {/* Image Skeleton Header (190px Height) */}
+      
       <div
         style={{
           height: 190,
@@ -29,7 +25,6 @@ export function ProductCardSkeleton() {
           position: 'relative',
         }}
       >
-        {/* Badge Skeleton Top Left */}
         <div
           style={{
             position: 'absolute',
@@ -43,23 +38,19 @@ export function ProductCardSkeleton() {
         />
       </div>
 
-      {/* Card Info Content (18px Padding) */}
       <div style={{ padding: 18, display: 'flex', flexDirection: 'column', flex: 1, gap: 10 }}>
-        {/* Category & Title Skeletons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{ width: 80, height: 12, borderRadius: 4, background: 'var(--bg-sunken)' }} />
           <div style={{ width: '90%', height: 20, borderRadius: 4, background: 'var(--bg-sunken)' }} />
           <div style={{ width: '60%', height: 14, borderRadius: 4, background: 'var(--bg-sunken)' }} />
         </div>
 
-        {/* Specs Pills Skeleton */}
         <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
           <div style={{ width: 70, height: 20, borderRadius: 'var(--radius-pill)', background: 'var(--bg-sunken)' }} />
           <div style={{ width: 85, height: 20, borderRadius: 'var(--radius-pill)', background: 'var(--bg-sunken)' }} />
           <div style={{ width: 60, height: 20, borderRadius: 'var(--radius-pill)', background: 'var(--bg-sunken)' }} />
         </div>
 
-        {/* Seller & Rating Skeleton */}
         <div
           style={{
             display: 'flex',
@@ -77,7 +68,6 @@ export function ProductCardSkeleton() {
           <div style={{ width: 50, height: 14, borderRadius: 4, background: 'var(--bg-sunken)' }} />
         </div>
 
-        {/* Price & CTA Button Skeleton */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <div style={{ width: 90, height: 18, borderRadius: 4, background: 'var(--bg-sunken)' }} />

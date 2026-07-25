@@ -21,8 +21,10 @@ export interface FetchProductsPageResult {
 }
 
 /**
- * Paginated API service simulator:
- * Generates continuous paginated device listings (Page 1, 2, 3...) for infinite scroll testing.
+ * Fetches a paginated, filtered, and sorted list of marketplace products.
+ * This is a mock service that simulates a network request and operates on in-memory data.
+ * @param params - The parameters for filtering, sorting, and pagination.
+ * @returns A promise that resolves to a page of products and pagination metadata.
  */
 export async function fetchMarketplaceProductsPage({
   page = 1,
@@ -35,11 +37,9 @@ export async function fetchMarketplaceProductsPage({
   conditions = [],
   minTrustScore = 0,
 }: FetchProductsPageParams): Promise<FetchProductsPageResult> {
-  // Simulate network latency for infinite scroll pagination
   await new Promise((res) => setTimeout(res, 300))
 
-  // Filter base products
-  let filtered = MARKETPLACE_PRODUCTS.filter((prod) => {
+  const filtered = MARKETPLACE_PRODUCTS.filter((prod) => {
     if (category !== 'All' && prod.category !== category) return false
     if (prod.priceUSD < minPrice || prod.priceUSD > maxPrice) return false
     if (conditions.length > 0 && !conditions.includes(prod.condition)) return false
@@ -57,7 +57,6 @@ export async function fetchMarketplaceProductsPage({
     return true
   })
 
-  // Sort base products
   filtered.sort((a, b) => {
     if (sortBy === 'price-asc') return a.priceUSD - b.priceUSD
     if (sortBy === 'price-desc') return b.priceUSD - a.priceUSD

@@ -1,7 +1,3 @@
-/**
- * Next.js Image Optimization Shimmer Blur Data URL Generator:
- * Generates a lightweight SVG shimmer base64 placeholder for Next.js Image `blurDataURL` prop.
- */
 
 const toBase64 = (str: string) =>
   typeof window === 'undefined' ? Buffer.from(str).toString('base64') : window.btoa(str)

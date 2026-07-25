@@ -6,13 +6,17 @@ import { DeviceGrid } from '@/components/marketplace/DeviceGrid'
 import { MarketplaceFilterSidebar, FilterState } from '@/components/marketplace/MarketplaceFilterSidebar'
 import { Toast, ToastTone } from '@/components/Toast'
 
+/**
+ * The main screen for the marketplace.
+ * It orchestrates the filter sidebar and the device grid, manages filter state,
+ * and synchronizes the state with URL query parameters.
+ * @returns The JSX for the marketplace page.
+ */
 export function MarketplaceScreen() {
   const [toast, setToast] = useState<{ message: string; tone: ToastTone } | null>(null)
 
-  // Mobile Filter Drawer Open State
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
-  // Default Filter State
   const [filters, setFilters] = useState<FilterState>({
     category: 'All',
     searchQuery: '',
@@ -23,9 +27,7 @@ export function MarketplaceScreen() {
     sortBy: 'featured',
   })
 
-  // 1. Read Initial Filters from URL Query Parameters
   useEffect(() => {
-    if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
 
     const urlCategory = (params.get('category') as ProductCategory) || 'All'
@@ -48,9 +50,7 @@ export function MarketplaceScreen() {
     })
   }, [])
 
-  // 2. Automatically Update URL Query Parameters when Filters Change
   const updateUrlQueryParams = useCallback((newFilters: FilterState) => {
-    if (typeof window === 'undefined') return
 
     const params = new URLSearchParams()
     if (newFilters.category !== 'All') params.set('category', newFilters.category)
@@ -99,14 +99,12 @@ export function MarketplaceScreen() {
         minHeight: '85vh',
       }}
     >
-      {/* Toast Notification */}
       {toast && (
         <div style={{ position: 'fixed', bottom: 32, right: 24, zIndex: 1100 }}>
           <Toast message={toast.message} tone={toast.tone} onDismiss={() => setToast(null)} />
         </div>
       )}
 
-      {/* Marketplace Header Hero */}
       <div
         style={{
           background: 'linear-gradient(135deg, #0b2b23 0%, #174b3e 60%, #0e6f44 100%)',
@@ -123,14 +121,12 @@ export function MarketplaceScreen() {
         }}
       >
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(8px)', padding: '4px 12px', borderRadius: 'var(--radius-pill)', fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 10 }}>
-            🛡️ Soroban Smart Escrow Protected
-          </div>
+         
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.1rem', fontWeight: 800, margin: '0 0 6px 0', lineHeight: 1.1 }}>
             Electronics & Clean-Tech Marketplace
           </h1>
           <p style={{ fontSize: '1rem', opacity: 0.9, margin: 0, maxWidth: 640, lineHeight: 1.5 }}>
-            Browse verified refurbished MacBooks, smartphones, solar microinverters, and power equipment backed by smart contract escrow guarantees.
+            Browse verified refurbished MacBooks, smartphones, solar microinverters, and power equipments.
           </p>
         </div>
 
@@ -139,16 +135,11 @@ export function MarketplaceScreen() {
             <div style={{ fontSize: 18, fontWeight: 800, fontFamily: 'var(--font-data)' }}>32 Devices</div>
             <div style={{ fontSize: 11, opacity: 0.85 }}>Verified In-Stock</div>
           </div>
-          <div style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '10px 18px', borderRadius: 'var(--radius-input)', textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 800, fontFamily: 'var(--font-data)' }}>100%</div>
-            <div style={{ fontSize: 11, opacity: 0.85 }}>Escrow Security</div>
-          </div>
+         
         </div>
       </div>
 
-      {/* 2-Column Layout: Main Products Area (LEFT) & Sticky Filter Sidebar (RIGHT) */}
       <div className="hb-marketplace-layout">
-        {/* Main Products Area (LEFT) */}
         <div className="hb-main-products-area">
           <DeviceGrid
             filters={filters}
@@ -158,7 +149,6 @@ export function MarketplaceScreen() {
           />
         </div>
 
-        {/* Sticky Filter Sidebar (RIGHT) - Controlled Mobile Drawer */}
         <MarketplaceFilterSidebar
           filters={filters}
           mobileOpen={mobileFiltersOpen}

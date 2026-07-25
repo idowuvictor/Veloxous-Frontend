@@ -11,11 +11,7 @@ interface DeviceCardProps {
   onSelectQuote?: (product: DeviceProduct) => void
 }
 
-/**
- * Memoized DeviceCard component with Next.js Image Optimization:
- * Uses Next.js <Image /> with fill, sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw",
- * and blurDataURL shimmer placeholder for ultra-fast, smooth loading.
- */
+
 export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: DeviceCardProps) {
   const isBrandNew = product.condition === 'Brand New'
   const isExcellent = product.condition.includes('Excellent')
@@ -31,9 +27,9 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
         display: 'flex',
         flexDirection: 'column',
         transition: 'transform var(--dur-press) var(--ease-out), boxShadow var(--dur-press) var(--ease-out)',
+        opacity: product.inStock ? 1 : 0.6,
       }}
     >
-      {/* Product Image Container (190px Height with Next.js Image Optimization) */}
       <div
         style={{
           position: 'relative',
@@ -56,7 +52,6 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
           }}
         />
 
-        {/* Condition Badge (Top Left with Darker High-Contrast Background) */}
         <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 2 }}>
           <span
             style={{
@@ -74,11 +69,10 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
               gap: 5,
             }}
           >
-            {isBrandNew ? '✨ Brand New' : isExcellent ? '🌟 Refurbished - Excellent' : `📦 ${product.condition}`}
+            {isBrandNew ? ' Brand New' : isExcellent ? ' Refurbished - Excellent' : ` ${product.condition}`}
           </span>
         </div>
 
-        {/* Discount Badge if any */}
         {product.discountPercent && (
           <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}>
             <span
@@ -100,7 +94,6 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
         )}
       </div>
 
-      {/* Product Info Body */}
       <div style={{ padding: 18, display: 'flex', flexDirection: 'column', flex: 1, gap: 10 }}>
         <div>
           <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -123,7 +116,6 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
           </div>
         </div>
 
-        {/* Specs Pill List */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
           {product.specs.slice(0, 3).map((spec: string, idx: number) => (
             <span
@@ -143,7 +135,6 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
           ))}
         </div>
 
-        {/* Rating & Seller Row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, marginTop: 'auto', paddingTop: 8, borderTop: '1px solid var(--ink-12)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Image
@@ -167,7 +158,6 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
           </div>
         </div>
 
-        {/* Price & CTA Row ("Buy Now" Button) */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 }}>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-data)', lineHeight: 1.15 }}>
@@ -179,11 +169,13 @@ export const DeviceCard = memo(function DeviceCard({ product, onSelectQuote }: D
           </div>
 
           <Button
-            variant="primary"
+            variant={product.inStock ? 'primary' : 'secondary'}
             size="sm"
             onClick={() => onSelectQuote?.(product)}
+            disabled={!product.inStock}
+            style={{ minWidth: 90 }}
           >
-            Buy Now
+            {product.inStock ? 'Buy Now' : 'Out of Stock'}
           </Button>
         </div>
       </div>

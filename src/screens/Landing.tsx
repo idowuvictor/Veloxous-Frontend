@@ -11,7 +11,6 @@ export interface LandingProps {
 export function Landing({ onConnect, onNav }: LandingProps) {
   return (
     <main id="main-content">
-      {/* Hero */}
       <section
         className="hb-hero-grid hb-rise"
         style={{ maxWidth: 1320, margin: '0 auto', padding: '64px 32px 40px' }}

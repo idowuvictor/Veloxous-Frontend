@@ -17,6 +17,13 @@ interface DeviceGridProps {
 
 const LIMIT = 8
 
+/**
+ * Renders a grid of device products with support for filtering, sorting, and infinite-scroll pagination.
+ * It handles fetching product data based on the provided filters and displays loading states.
+ * @param {DeviceGridProps} props - The props for the component.
+ * @param {DeviceProduct[]} [props.products] - Initial products to display (for server-side rendering).
+ * @returns The JSX for the device grid.
+ */
 export function DeviceGrid({
   products: initialProducts,
   filters,
@@ -24,7 +31,6 @@ export function DeviceGrid({
   onOpenMobileFilters,
   onSelectProduct,
 }: DeviceGridProps) {
-  // Local fallback if filters prop is not provided
   const category = filters?.category || 'All'
   const searchQuery = filters?.searchQuery || ''
   const sortBy = filters?.sortBy || 'featured'
@@ -33,19 +39,18 @@ export function DeviceGrid({
   const conditions = filters?.conditions || []
   const minTrustScore = filters?.minTrustScore || 0
 
-  // Infinite Scroll State
   const [displayedProducts, setDisplayedProducts] = useState<DeviceProduct[]>([])
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false)
   const [totalItems, setTotalItems] = useState(0)
+  const requestCounter = useRef(0)
 
-  // IntersectionObserver Sentinel Ref
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  // Load initial page (Page 1) or reset when category/search/sort/filters change
   const loadPageOne = useCallback(async () => {
+    const currentRequestId = ++requestCounter.current
     setIsInitialLoading(true)
     try {
       const res = await fetchMarketplaceProductsPage({
@@ -60,17 +65,20 @@ export function DeviceGrid({
         minTrustScore,
       })
 
-      // Use initialProducts as fallback if provided on first render with default filters
-      const items = initialProducts && category === 'All' && !searchQuery && sortBy === 'featured' && page === 1 && conditions.length === 0
-        ? initialProducts.slice(0, LIMIT)
-        : res.products
+      if (currentRequestId !== requestCounter.current) return
+
+      const isDefaultState = category === 'All' && !searchQuery && page === 1;
+      const items = (isDefaultState && initialProducts) 
+        ? initialProducts.slice(0, LIMIT) 
+        : res.products;
 
       setDisplayedProducts(items)
       setHasMore(res.hasMore)
       setTotalItems(res.total)
-      setPage(1)
-    } catch {
-      /* ignore */
+      if (isDefaultState) setPage(1);
+      
+    } catch(err) {
+      console.error(err)
     } finally {
       setIsInitialLoading(false)
     }
@@ -80,12 +88,12 @@ export function DeviceGrid({
     loadPageOne()
   }, [loadPageOne])
 
-  // Fetch Next Page handler (Page 2, 3...)
-  const fetchNextPage = useCallback(async () => {
-    if (isFetchingNextPage || isInitialLoading || !hasMore) return
+const fetchNextPage = useCallback(async () => {
+    if (isFetchingNextPage || isInitialLoading || !hasMore) return;
 
-    setIsFetchingNextPage(true)
-    const nextPage = page + 1
+    const currentRequestId = requestCounter.current
+    setIsFetchingNextPage(true);
+    const nextPage = page + 1;
 
     try {
       const res = await fetchMarketplaceProductsPage({
@@ -98,20 +106,36 @@ export function DeviceGrid({
         maxPrice,
         conditions,
         minTrustScore,
-      })
+      });
 
-      // Append new results seamlessly without re-rendering existing items
-      setDisplayedProducts((prev) => [...prev, ...res.products])
-      setHasMore(res.hasMore)
-      setPage(nextPage)
-    } catch {
-      /* ignore */
+      if (currentRequestId !== requestCounter.current) return
+
+      setDisplayedProducts((prev) => {
+        if (prev.length === 0) return prev;
+        return [...prev, ...res.products];
+      });
+      
+      setHasMore(res.hasMore);
+      setPage(nextPage);
+    } catch (err) {
+      console.error("Failed to fetch next page:", err);
     } finally {
-      setIsFetchingNextPage(false)
+      setIsFetchingNextPage(false);
     }
-  }, [isFetchingNextPage, isInitialLoading, hasMore, page, category, searchQuery, sortBy, minPrice, maxPrice, conditions, minTrustScore])
+  }, [
+    isFetchingNextPage, 
+    isInitialLoading, 
+    hasMore, 
+    page, 
+    category, 
+    searchQuery, 
+    sortBy, 
+    minPrice, 
+    maxPrice, 
+    conditions, 
+    minTrustScore,
+  ]);
 
-  // IntersectionObserver API Setup (Re-activates when isInitialLoading turns false)
   useEffect(() => {
     const sentinelEl = loadMoreRef.current
     if (!sentinelEl || isInitialLoading) return
@@ -125,7 +149,7 @@ export function DeviceGrid({
       },
       {
         root: null,
-        rootMargin: '300px', // Trigger 300px before reaching bottom
+        rootMargin: '300px', 
         threshold: 0,
       }
     )
@@ -140,7 +164,6 @@ export function DeviceGrid({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Product Results Counter & Sort Header Bar with Mobile Filter Icon Button */}
       <div
         style={{
           display: 'flex',
@@ -156,7 +179,6 @@ export function DeviceGrid({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Mobile Filter Toggle Icon Button (Visible ONLY on small screens < 768px) */}
           {onOpenMobileFilters && (
             <button
               type="button"
@@ -178,7 +200,6 @@ export function DeviceGrid({
           </span>
         </div>
 
-        {/* Sort By Selector */}
         {filters && onFilterChange && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 13, color: 'var(--ink-60)' }}>Sort by:</span>
@@ -205,9 +226,7 @@ export function DeviceGrid({
         )}
       </div>
 
-      {/* RESPONSIVE CSS GRID ARCHITECTURE (4 CARDS PER ROW: grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6) */}
       {isInitialLoading ? (
-        /* INITIAL LOAD STATE: Display 8 Skeleton Cards (2 full rows of 4 cards) */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hb-responsive-device-grid" data-testid="initial-skeletons-grid">
           {Array.from({ length: 8 }).map((_, idx) => (
             <ProductCardSkeleton key={`initial-skel-${idx}`} />
@@ -228,7 +247,6 @@ export function DeviceGrid({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hb-responsive-device-grid">
-          {/* Real Rendered Cards */}
           {displayedProducts.map((product: DeviceProduct) => (
             <DeviceCard
               key={product.id}
@@ -237,7 +255,6 @@ export function DeviceGrid({
             />
           ))}
 
-          {/* INFINITE SCROLL PAGINATION APPEND: Display 4 Skeleton Cards while fetching next page */}
           {isFetchingNextPage &&
             Array.from({ length: 4 }).map((_, idx) => (
               <ProductCardSkeleton key={`page-skel-${idx}`} />
@@ -245,7 +262,6 @@ export function DeviceGrid({
         </div>
       )}
 
-      {/* HIDDEN SENTINEL ELEMENT FOR INTERSECTION OBSERVER INFINITE SCROLL */}
       <div
         ref={loadMoreRef}
         data-testid="load-more-sentinel"
@@ -289,7 +305,7 @@ export function DeviceGrid({
 
         {!hasMore && displayedProducts.length > 0 && !isInitialLoading && (
           <div style={{ fontSize: 12, color: 'var(--ink-60)', fontWeight: 600 }}>
-            ✓ All {displayedProducts.length} verified devices loaded
+             All {displayedProducts.length} verified devices loaded
           </div>
         )}
       </div>

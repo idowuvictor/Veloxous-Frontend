@@ -28,6 +28,7 @@ const CATEGORIES: ProductCategory[] = [
   'Smartphones & Tablets',
   'Solar & Clean Energy',
   'Audio & Consoles',
+  'Components & Logic Boards',
 ]
 
 const CONDITIONS: ProductCondition[] = [
@@ -37,6 +38,12 @@ const CONDITIONS: ProductCondition[] = [
   'Pre-Owned',
 ]
 
+/**
+ * A sidebar component that provides UI controls for filtering marketplace products.
+ * It includes controls for search, category, price, condition, and trust score.
+ * It also handles responsive behavior, appearing as a drawer on mobile devices.
+ * @param {MarketplaceFilterSidebarProps} props - The props for the component.
+ */
 export function MarketplaceFilterSidebar({
   filters,
   mobileOpen = false,
@@ -44,18 +51,15 @@ export function MarketplaceFilterSidebar({
   onChange,
   onReset,
 }: MarketplaceFilterSidebarProps) {
-  // Local search state for 500ms debouncing
   const [searchInput, setSearchInput] = useState(filters.searchQuery)
   const debouncedSearch = useDebounce(searchInput, 500)
 
-  // Sync debounced search to parent filter state
   useEffect(() => {
     if (debouncedSearch !== filters.searchQuery) {
       onChange({ ...filters, searchQuery: debouncedSearch })
     }
   }, [debouncedSearch])
 
-  // Sync external search updates (e.g. from URL load) to local input
   useEffect(() => {
     setSearchInput(filters.searchQuery)
   }, [filters.searchQuery])
@@ -81,7 +85,6 @@ export function MarketplaceFilterSidebar({
 
   return (
     <aside className="hb-filter-sidebar-wrapper">
-      {/* Mobile Backdrop Overlay (< 768px) */}
       {mobileOpen && (
         <div
           style={{
@@ -98,7 +101,6 @@ export function MarketplaceFilterSidebar({
         />
       )}
 
-      {/* Main Filter Sidebar Container */}
       <div
         className={`hb-filter-sidebar ${mobileOpen ? 'hb-drawer-open' : ''}`}
         style={{
@@ -114,7 +116,6 @@ export function MarketplaceFilterSidebar({
           overflowY: 'auto',
         }}
       >
-        {/* Sidebar Header & Close / Reset */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--ink-12)', paddingBottom: 10 }}>
           <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>
             Filter Electronics
@@ -136,7 +137,6 @@ export function MarketplaceFilterSidebar({
               Reset
             </button>
 
-            {/* Close Button on Mobile Drawer */}
             {mobileOpen && (
               <button
                 type="button"
@@ -162,7 +162,6 @@ export function MarketplaceFilterSidebar({
           </div>
         </div>
 
-        {/* 1. Debounced Search Input (500ms) */}
         <div>
           <label htmlFor="debounced-search" style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Search (500ms debounce)
@@ -186,7 +185,6 @@ export function MarketplaceFilterSidebar({
           />
         </div>
 
-        {/* 2. Category Selection */}
         <div>
           <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Category
@@ -219,7 +217,6 @@ export function MarketplaceFilterSidebar({
           </div>
         </div>
 
-        {/* 3. Price Range Slider */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -240,7 +237,6 @@ export function MarketplaceFilterSidebar({
           />
         </div>
 
-        {/* 4. Condition Checkboxes */}
         <div>
           <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Condition
@@ -274,7 +270,6 @@ export function MarketplaceFilterSidebar({
           </div>
         </div>
 
-        {/* 5. Minimum Seller Trust Score */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
