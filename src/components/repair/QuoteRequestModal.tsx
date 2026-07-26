@@ -34,32 +34,29 @@ export function QuoteRequestModal({
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const modalRef = useRef<HTMLDivElement>(null)
 
-  // Step 1 State
   const [deviceCategory, setDeviceCategory] = useState(initialCategory || 'MacBook Pro / Air')
   const [deviceModel, setDeviceModel] = useState('MacBook Pro 16" (2023, M2 Max)')
   const [issueType, setIssueType] = useState(initialService || 'Screen Replacement')
 
-  // Step 2 State (Real AWS S3 Direct Uploads)
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
-  // Step 3 State
   const [description, setDescription] = useState('')
   const [serviceMethod, setServiceMethod] = useState<'dropoff' | 'mail' | 'express'>('dropoff')
   const [customPrice, setCustomPrice] = useState(initialPrice ? initialPrice.replace(/[^0-9.]/g, '') : '180')
 
-  // Step 4 State
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Validation rule: Require photo for Screen Replacement or Water Damage
+  const successfulUploads = uploadedPhotos.filter((p) => p.status === 'completed')
+
   const isPhotoRequired =
     issueType.toLowerCase().includes('screen') ||
     issueType.toLowerCase().includes('water') ||
     issueType.toLowerCase().includes('damage')
 
-  const isStep2NextDisabled = (isPhotoRequired && uploadedPhotos.length === 0) || isUploading
+  const isStep2NextDisabled =
+    (isPhotoRequired && successfulUploads.length === 0) || isUploading
 
-  // Focus trap & Escape key handler
   useEffect(() => {
     const modalEl = modalRef.current
     if (!modalEl) return
@@ -103,7 +100,6 @@ export function QuoteRequestModal({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose, step])
 
-  // Real AWS S3 Presigned URL Upload Trigger
   const handleRealS3Upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
@@ -165,7 +161,7 @@ export function QuoteRequestModal({
         device: deviceModel,
         service: issueType,
         cost: `${customPrice} USDC`,
-        s3PhotosCount: uploadedPhotos.length,
+        s3PhotosCount: successfulUploads.length,
       })
     }, 400)
   }
@@ -196,7 +192,7 @@ export function QuoteRequestModal({
         aria-describedby="wizard-desc"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
+        
         <button
           type="button"
           onClick={onClose}
@@ -215,12 +211,11 @@ export function QuoteRequestModal({
           ✕
         </button>
 
-        {/* Wizard Progress Indicator */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <Badge tone="solar">Step {step} of 4</Badge>
             <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-60)', fontFamily: 'var(--font-data)' }}>
-              Soroban Escrow Protected
+              Protected
             </span>
           </div>
 
@@ -252,7 +247,6 @@ export function QuoteRequestModal({
           {step === 4 && 'Review summary details and confirm smart contract escrow deposit.'}
         </p>
 
-        {/* STEP 1: Select Device Model & Issue Type */}
         {step === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
@@ -318,10 +312,8 @@ export function QuoteRequestModal({
           </div>
         )}
 
-        {/* STEP 2: Upload Photos of Damage (AWS S3 Direct Uploads) */}
         {step === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* S3 Uploader Drag-Drop Area */}
             <div
               style={{
                 border: '2px dashed var(--solar)',
@@ -353,14 +345,13 @@ export function QuoteRequestModal({
                 Click or Drop Diagnostic Photos Here
               </div>
               <div style={{ fontSize: 12, color: 'var(--ink-60)', marginTop: 4 }}>
-                Direct Upload to AWS S3 via Presigned URL (XHR Progress Monitored)
+                Direct Upload to AWS S3 via Presigned URL 
               </div>
             </div>
 
-            {/* Uploaded Photos List */}
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-60)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Uploaded Damage Attachments ({uploadedPhotos.length}):
+                Uploaded Damage Attachments ({successfulUploads.length}):
               </div>
 
               {uploadedPhotos.length === 0 ? (
@@ -439,7 +430,6 @@ export function QuoteRequestModal({
           </div>
         )}
 
-        {/* STEP 3: Describe Issue & Service Method */}
         {step === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
@@ -489,7 +479,7 @@ export function QuoteRequestModal({
             </div>
 
             <AmountInput
-              label="Soroban Smart Escrow Deposit (USDC)"
+              label="Veloxous Deposit (USDC)"
               value={customPrice}
               onChange={setCustomPrice}
               currency="USDC"
@@ -506,7 +496,6 @@ export function QuoteRequestModal({
           </div>
         )}
 
-        {/* STEP 4: Review and Submit Request to Technician */}
         {step === 4 && (
           <form onSubmit={handleFinalSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div
@@ -558,7 +547,7 @@ export function QuoteRequestModal({
             </div>
 
             <div style={{ fontSize: 12.5, color: 'var(--ink-60)', lineHeight: 1.5 }}>
-              By submitting, your {customPrice} USDC is securely locked in Soroban Smart Escrow contract (<code style={{ fontFamily: 'var(--font-data)' }}>{technician.escrowContract}</code>). Payout is released only after your repair is tested & approved.
+              By submitting, your {customPrice} USDC is securely locked in Veloxous Wallet (<code style={{ fontFamily: 'var(--font-data)' }}>{technician.escrowContract}</code>). Payout is released only after your repair is tested & approved.
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>

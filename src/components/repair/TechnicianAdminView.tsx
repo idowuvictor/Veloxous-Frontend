@@ -12,20 +12,45 @@ export function TechnicianAdminView({ technician }: TechnicianAdminViewProps) {
   const [bondAmount, setBondAmount] = useState(technician.stakedBondXLM.toString())
   const [isUpdatingBond, setIsUpdatingBond] = useState(false)
   const [bondUpdatedSuccess, setBondUpdatedSuccess] = useState(false)
+  const [bondError, setBondError] = useState<string | null>(null)
 
-  const handleUpdateBond = (e: React.FormEvent) => {
+  const handleUpdateBond = async (e: React.FormEvent) => {
     e.preventDefault()
+    setBondError(null)
+    setBondUpdatedSuccess(false)
     setIsUpdatingBond(true)
-    setTimeout(() => {
-      setIsUpdatingBond(false)
+
+    try {
+      const response = await fetch('/api/bond/stake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: bondAmount,
+          technicianId: technician.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update collateral bond')
+      }
+
+      // Only show success after transaction confirmation
       setBondUpdatedSuccess(true)
       setTimeout(() => setBondUpdatedSuccess(false), 3000)
-    }, 900)
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'An error occurred'
+      setBondError(errorMsg)
+      console.error('Bond update error:', error)
+    } finally {
+      setIsUpdatingBond(false)
+    }
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Banner Notice */}
+      
       <div
         style={{
           background: 'color-mix(in srgb, var(--solar) 15%, var(--surface))',
@@ -41,22 +66,20 @@ export function TechnicianAdminView({ technician }: TechnicianAdminViewProps) {
       >
         <div>
           <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>
-            ⚙️ Technician Management Console — {technician.name}
+             Technician Management Console — {technician.name}
           </div>
           <div style={{ fontSize: 13.5, color: 'var(--ink-60)', marginTop: 2 }}>
-            Manage active Soroban escrow jobs, update staked collateral bond, and monitor review reputation metrics.
+            Manage active jobs, update staked collateral bond, and monitor review reputation metrics.
           </div>
         </div>
 
         <Badge tone="solar">Status: Online & Accepting Repairs</Badge>
       </div>
 
-      {/* Grid of Admin Tools */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
-        {/* Active Escrow Requests */}
         <Card>
           <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
-            Active Escrow Repair Jobs
+            Active Repair Jobs
           </h3>
           <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 12 }}>
             3 Pending Approval / In Progress
@@ -94,7 +117,7 @@ export function TechnicianAdminView({ technician }: TechnicianAdminViewProps) {
                     {job.escrow}
                   </div>
                   <Button variant="secondary" size="sm">
-                    View Escrow
+                    View Details
                   </Button>
                 </div>
               </div>
@@ -102,10 +125,9 @@ export function TechnicianAdminView({ technician }: TechnicianAdminViewProps) {
           </div>
         </Card>
 
-        {/* Bonded Collateral Manager */}
         <Card>
           <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
-            Soroban Collateral Bond Manager
+            Collateral Bond Manager
           </h3>
           <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 16 }}>
             Higher bond increases public trust & search rank
@@ -121,7 +143,13 @@ export function TechnicianAdminView({ technician }: TechnicianAdminViewProps) {
 
             {bondUpdatedSuccess && (
               <div style={{ fontSize: 13, color: 'var(--growth)', fontWeight: 600 }}>
-                ✓ Soroban Collateral Bond updated on Stellar Testnet!
+                ✓ Collateral Bond updated and confirmed on Stellar!
+              </div>
+            )}
+
+            {bondError && (
+              <div style={{ fontSize: 13, color: 'var(--ember)', fontWeight: 600 }}>
+                ✕ {bondError}
               </div>
             )}
 

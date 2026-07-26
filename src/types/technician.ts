@@ -63,6 +63,7 @@ export interface TechnicianProfile {
   avgTurnaroundHours: number
   ewasteSavedKg: number
   carbonSavedKg: number
+  disputesLost: number
   bio: string
   certifications: Certification[]
   specialties: string[]

@@ -11,9 +11,8 @@ interface OverviewTabProps {
 export function OverviewTab({ technician, onSelectServiceQuote }: OverviewTabProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Bio and Certifications Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
-        {/* Bio Card */}
+       
         <Card>
           <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
             Technician Profile & Background
@@ -38,13 +37,12 @@ export function OverviewTab({ technician, onSelectServiceQuote }: OverviewTabPro
           </div>
         </Card>
 
-        {/* Certifications & Lab Hardware */}
         <Card>
           <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
             Verifiable Certifications & Lab Spec
           </h3>
           <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 12 }}>
-            Cryptographically Verified Credentials
+             Verified Credentials
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
@@ -64,7 +62,7 @@ export function OverviewTab({ technician, onSelectServiceQuote }: OverviewTabPro
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{cert.name}</div>
                   <div style={{ fontSize: 12, color: 'var(--ink-60)' }}>
-                    {cert.issuer} • Issued {cert.year}
+                    {cert.issuer}  Issued {cert.year}
                   </div>
                 </div>
                 <span
@@ -79,7 +77,7 @@ export function OverviewTab({ technician, onSelectServiceQuote }: OverviewTabPro
                     fontWeight: 600,
                   }}
                 >
-                  ✓ VERIFIED
+                   VERIFIED
                 </span>
               </div>
             ))}
@@ -96,13 +94,12 @@ export function OverviewTab({ technician, onSelectServiceQuote }: OverviewTabPro
         </Card>
       </div>
 
-      {/* Pricing Matrix */}
       <Card>
         <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
           Standard Repair Rates & Turnaround Matrix
         </h3>
         <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 16 }}>
-          All repairs covered by Smart Contract Escrow Guarantee
+          All repairs covered by Veloxous Guarantee
         </div>
 
         <div style={{ overflowX: 'auto' }}>

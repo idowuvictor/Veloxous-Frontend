@@ -104,8 +104,8 @@ export function TechnicianHeader({
       navigator.clipboard?.writeText(window.location.href)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch {
-      /* ignore */
+    } catch(err) {
+      console.error('Failed to copy link:', err)
     }
   }
 

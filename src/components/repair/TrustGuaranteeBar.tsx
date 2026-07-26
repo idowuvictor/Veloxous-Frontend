@@ -51,7 +51,7 @@ export function TrustGuaranteeBar({ stakedXlm, escrowContract }: TrustGuaranteeB
                 color: 'var(--ink)',
               }}
             >
-              Veloxous On-Chain Escrow Security Shield
+              Veloxous Security
             </h4>
             <span
               style={{
@@ -69,7 +69,7 @@ export function TrustGuaranteeBar({ stakedXlm, escrowContract }: TrustGuaranteeB
           </div>
 
           <p style={{ margin: '2px 0 0 0', fontSize: 13.5, color: 'var(--ink-60)' }}>
-            Funds remain locked in Soroban Smart Escrow contract (<code style={{ fontFamily: 'var(--font-data)' }}>{escrowContract}</code>) until repair tests pass. Backed by {stakedXlm.toLocaleString()} XLM collateral bond.
+            Funds remain locked with us until repair tests pass. Backed by {stakedXlm.toLocaleString()} XLM collateral bond and escrow contract {escrowContract}.
           </p>
         </div>
       </div>

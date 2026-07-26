@@ -28,31 +28,23 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
   const [selectedTechId, setSelectedTechId] = useState<string>(defaultTech.id)
   const [activeTab, setActiveTab] = useState<'overview' | 'portfolio' | 'reviews' | 'escrow'>('overview')
   const [viewMode, setViewMode] = useState<'public' | 'admin'>('public')
-
-  // Saved technicians
   const [savedTechs, setSavedTechs] = useState<Record<string, boolean>>({})
-
-  // Modals state
   const [quoteModalOpen, setQuoteModalOpen] = useState(false)
   const [writeReviewOpen, setWriteReviewOpen] = useState(false)
 
-  // Selected Service for Quote prefill
   const [selectedQuotePrefill, setSelectedQuotePrefill] = useState<{
     service?: string
     category?: string
     price?: string
   }>({})
 
-  // Initial reviews for selected technician
   const initialTechReviews = TECHNICIAN_REVIEWS.filter((r) => r.technicianId === selectedTechId)
 
-  // SWR-Style Client Hook for Lazy-Loading Reviews Feed
   const { reviews: currentReviews, isLoading: isReviewsLoading, addReview } = useTechnicianReviews(
     selectedTechId,
     initialTechReviews
   )
 
-  // Toast state
   const [toast, setToast] = useState<{ message: string; tone: ToastTone } | null>(null)
 
   const currentTechnician: TechnicianProfile =
@@ -107,7 +99,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
         position: 'relative',
       }}
     >
-      {/* Toast Notification */}
       {toast && (
         <div style={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1100 }}>
           <Toast
@@ -118,7 +109,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
         </div>
       )}
 
-      {/* Prominent Sticky CTA Floating Button */}
       <div
         style={{
           position: 'fixed',
@@ -143,7 +133,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
             color: 'var(--ink)',
             border: '0px',
             fontSize: 15,
-            // fontWeight: 800,
             cursor: 'pointer',
             boxShadow: 'var(--shadow-lg)',
             transition: 'transform 0.15s ease',
@@ -155,7 +144,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
         </button>
       </div>
 
-      {/* Top Technician Selector Bar */}
       <TechnicianSelectorBar
         technicians={TECHNICIANS_DATA}
         selectedId={selectedTechId}
@@ -168,12 +156,9 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
       />
 
       {viewMode === 'admin' ? (
-        /* Technician Self-Service Admin Dashboard */
         <TechnicianAdminView technician={currentTechnician} />
       ) : (
-        /* Public High-Trust Landing Profile Architecture */
         <>
-          {/* Main Hero Header */}
           <TechnicianHeader
             technician={currentTechnician}
             onOpenQuoteModal={() => {
@@ -185,16 +170,13 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
             onToggleSave={() => handleToggleSave(currentTechnician.id)}
           />
 
-          {/* On-Chain Escrow Security Shield Guarantee */}
           <TrustGuaranteeBar
             stakedXlm={currentTechnician.stakedBondXLM}
             escrowContract={currentTechnician.escrowContract}
           />
 
-          {/* Key Performance & Trust Metrics */}
           <TechnicianStatsGrid technician={currentTechnician} />
 
-          {/* Main Profile Navigation Tabs */}
           <div
             style={{
               display: 'flex',
@@ -205,10 +187,10 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
             }}
           >
             {[
-              { id: 'overview', label: '📋 Overview & Rates', badge: undefined },
-              { id: 'portfolio', label: '🛠️ Proof Portfolio', badge: currentPortfolio.length },
-              { id: 'reviews', label: '⭐ Verified Reviews', badge: currentReviews.length },
-              { id: 'escrow', label: '🛡️ Soroban Escrow Vault', badge: 'Active' },
+              { id: 'overview', label: 'Overview & Rates', badge: undefined },
+              { id: 'portfolio', label: 'Proof Portfolio', badge: currentPortfolio.length },
+              { id: 'reviews', label: 'Verified Reviews', badge: currentReviews.length },
+              { id: 'escrow', label: 'Soroban Escrow Vault', badge: 'Active' },
             ].map((tab) => {
               const active = activeTab === tab.id
               return (
@@ -254,7 +236,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
             })}
           </div>
 
-          {/* Active Tab View */}
           {activeTab === 'overview' && (
             <OverviewTab
               technician={currentTechnician}
@@ -281,7 +262,6 @@ export function FixItDirectory({ initialTechId, serverTechnician }: FixItDirecto
         </>
       )}
 
-      {/* Quote Request Modal Wizard */}
       {quoteModalOpen && (
         <QuoteRequestModal
           technician={currentTechnician}

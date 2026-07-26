@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TechnicianProfile, TechnicianReview } from '@/types/technician'
 import { Badge, Button } from '@/components/index'
 import { ReviewsFeedSkeleton } from './ReviewsFeedSkeleton'
@@ -52,6 +52,12 @@ export function ReviewsDashboardTab({
   const totalFiltered = filteredReviews.length
   const totalPages = Math.ceil(totalFiltered / REVIEWS_PER_PAGE) || 1
   const startIndex = (currentPage - 1) * REVIEWS_PER_PAGE
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages])
   const paginatedReviews = filteredReviews.slice(startIndex, startIndex + REVIEWS_PER_PAGE)
 
   const handlePageChange = (newPage: number) => {
@@ -63,9 +69,22 @@ export function ReviewsDashboardTab({
   const totalCount = technician.totalReviews
   const breakdown = technician.ratingBreakdown
 
+  const disputesLost = technician.disputesLost ?? 0
+  const disputeRatio = technician.completedRepairs > 0 ? (disputesLost / technician.completedRepairs) * 100 : 0
+  const allReviewsVerified = reviews.length > 0 && reviews.every((r) => r.isVerifiedEscrow)
+
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating)
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0
+    const emptyStars = 5 - fullStars - halfStar
+    return (
+      '★'.repeat(fullStars) +
+      (halfStar ? '½' : '') + 
+      '☆'.repeat(emptyStars)
+    )
+  }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      {/* 1. Summary Metrics & Social Proof Section */}
       <div
         style={{
           display: 'grid',
@@ -93,7 +112,7 @@ export function ReviewsDashboardTab({
             {technician.completedRepairs.toLocaleString()}
           </div>
           <div style={{ fontSize: 12.5, color: 'var(--growth)', fontWeight: 600, marginTop: 2 }}>
-            ✓ 100% On-Chain Escrow Backed
+            ✓ 100% Escrow Backed
           </div>
         </div>
 
@@ -121,22 +140,21 @@ export function ReviewsDashboardTab({
             background: 'var(--bg-sunken)',
             padding: 16,
             borderRadius: 'var(--radius-input)',
-            borderLeft: '4px solid var(--growth)',
+            borderLeft: `4px solid ${disputesLost === 0 ? 'var(--growth)' : 'var(--ember)'}`,
           }}
         >
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Dispute Ratio
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--growth)', fontFamily: 'var(--font-data)', marginTop: 4 }}>
-            0.0%
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontFamily: 'var(--font-data)', marginTop: 4 }}>
+            {disputeRatio.toFixed(1)}%
           </div>
-          <div style={{ fontSize: 12.5, color: 'var(--growth)', fontWeight: 600, marginTop: 2 }}>
-            0 Lost Disputes out of {technician.completedRepairs} Jobs
+          <div style={{ fontSize: 12.5, color: disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontWeight: 600, marginTop: 2 }}>
+            {disputesLost} Lost Disputes out of {technician.completedRepairs} Jobs
           </div>
         </div>
       </div>
 
-      {/* 2. Rating Distribution & Breakdown Card */}
       <div
         style={{
           background: 'var(--surface)',
@@ -147,7 +165,6 @@ export function ReviewsDashboardTab({
         }}
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
-          {/* Main Big Score */}
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
               <span
@@ -162,7 +179,9 @@ export function ReviewsDashboardTab({
                 {technician.rating.toFixed(2)}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 18, color: 'var(--solar)', fontWeight: 700 }}>★★★★★</span>
+                <span style={{ fontSize: 18, color: 'var(--solar)', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  {renderStars(technician.rating)}
+                </span>
                 <span style={{ fontSize: 13, color: 'var(--ink-60)' }}>
                   based on {totalCount} verified reviews
                 </span>
@@ -170,11 +189,12 @@ export function ReviewsDashboardTab({
             </div>
 
             <p style={{ fontSize: 13.5, color: 'var(--ink-60)', marginTop: 12, lineHeight: 1.5 }}>
-              100% of reviews are from customers who performed repairs under Soroban Smart Contract Escrow.
+              {allReviewsVerified
+                ? '100% of reviews are from customers who performed repairs under Veloxous.'
+                : 'Reviews include both verified and unverified customers.'}
             </p>
           </div>
 
-          {/* Star Distribution Bars */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center' }}>
             {[5, 4, 3, 2, 1].map((stars: number) => {
               const count =
@@ -234,7 +254,6 @@ export function ReviewsDashboardTab({
             })}
           </div>
 
-          {/* Aspect Scores */}
           <div
             style={{
               display: 'flex',
@@ -258,7 +277,6 @@ export function ReviewsDashboardTab({
         </div>
       </div>
 
-      {/* 3. Filter and Search Bar */}
       <div
         style={{
           display: 'flex',
@@ -309,7 +327,7 @@ export function ReviewsDashboardTab({
               }}
               style={{ accentColor: 'var(--growth)' }}
             />
-            Verified Escrow Only
+            Verified Only
           </label>
         </div>
 
@@ -355,7 +373,7 @@ export function ReviewsDashboardTab({
                     gap: 14,
                   }}
                 >
-                  {/* Header Row */}
+                  
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
                     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                       <div
@@ -397,7 +415,7 @@ export function ReviewsDashboardTab({
                         </Badge>
                       )}
 
-                      {/* Star Rating */}
+                     
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--solar-12)', padding: '4px 10px', borderRadius: 'var(--radius-pill)' }}>
                         <span style={{ fontSize: 14, color: 'var(--solar)', fontWeight: 800 }}>
                           {'★'.repeat(rev.rating)}
@@ -409,7 +427,7 @@ export function ReviewsDashboardTab({
                     </div>
                   </div>
 
-                  {/* Specific Device Repaired Pill */}
+                  
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Specific Device Repaired:
@@ -428,11 +446,10 @@ export function ReviewsDashboardTab({
                         gap: 6,
                       }}
                     >
-                      📱 {rev.deviceType} <span style={{ color: 'var(--ink-60)', fontWeight: 400 }}>({rev.repairCategory})</span>
+                       {rev.deviceType} <span style={{ color: 'var(--ink-60)', fontWeight: 400 }}>({rev.repairCategory})</span>
                     </span>
                   </div>
 
-                  {/* Textual Feedback */}
                   <div>
                     <h4 style={{ margin: '0 0 6px 0', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
                       {rev.title}
@@ -442,7 +459,6 @@ export function ReviewsDashboardTab({
                     </p>
                   </div>
 
-                  {/* Photos if any */}
                   {rev.photos && rev.photos.length > 0 && (
                     <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
                       {rev.photos.map((p: string, idx: number) => (
@@ -462,7 +478,6 @@ export function ReviewsDashboardTab({
                     </div>
                   )}
 
-                  {/* Technician Reply */}
                   {rev.technicianReply && (
                     <div
                       style={{
@@ -473,7 +488,7 @@ export function ReviewsDashboardTab({
                       }}
                     >
                       <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)', marginBottom: 4 }}>
-                        💬 Technician Reply ({rev.technicianReply.date}):
+                        Technician Reply ({rev.technicianReply.date}):
                       </div>
                       <div style={{ fontSize: 13.5, color: 'var(--ink-60)', lineHeight: 1.5 }}>
                         {rev.technicianReply.text}
@@ -481,7 +496,6 @@ export function ReviewsDashboardTab({
                     </div>
                   )}
 
-                  {/* Footer Controls & Stellar Tx Proof */}
                   <div
                     style={{
                       display: 'flex',
@@ -493,7 +507,7 @@ export function ReviewsDashboardTab({
                     }}
                   >
                     <span style={{ fontFamily: 'var(--font-data)', color: 'var(--ink-40)' }}>
-                      Tx Hash: <code style={{ color: 'var(--ink-60)' }}>{rev.stellarTxHash}</code>
+                     Transaction ID: <code style={{ color: 'var(--ink-60)' }}></code>
                     </span>
 
                     <button
@@ -510,7 +524,7 @@ export function ReviewsDashboardTab({
                         cursor: isVoted ? 'default' : 'pointer',
                       }}
                     >
-                      👍 Helpful ({currentHelpful})
+                       Helpful ({currentHelpful})
                     </button>
                   </div>
                 </div>

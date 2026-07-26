@@ -1,39 +1,111 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TechnicianProfile } from '@/types/technician'
 import { Card, Button, Badge } from '../index'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface EscrowVaultTabProps {
   technician: TechnicianProfile
 }
 
+type VerificationStatus = 'idle' | 'loading' | 'valid' | 'invalid' | 'error'
+
+interface WarrantyVerificationResult {
+  valid: boolean
+  deviceName?: string
+  escrowAmountUSDC?: number
+}
+
+/**
+ * Mocks a service call to verify a smart contract warranty ID.
+ * In a real application, this would be a fetch call to a backend API.
+ */
+async function verifyWarrantyId(
+  id: string,
+  signal: AbortSignal
+): Promise<WarrantyVerificationResult> {
+  // Simulate network latency
+  await new Promise((res) => setTimeout(res, 1200))
+
+  if (signal.aborted) {
+    throw new DOMException('Aborted', 'AbortError')
+  }
+
+  // Mock logic: valid if it's a specific string, otherwise invalid.
+  if (id.toUpperCase() === 'VX-8A4D-G7B2-L3C9') {
+    return {
+      valid: true,
+      deviceName: 'MacBook Pro 16" M2 Max',
+      escrowAmountUSDC: 2750,
+    }
+  }
+
+  return { valid: false }
+}
+
 export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
   const [serialQuery, setSerialQuery] = useState('')
-  const [claimStatus, setClaimStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
+  const [status, setStatus] = useState<VerificationStatus>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [verifiedData, setVerifiedData] = useState<WarrantyVerificationResult | null>(null)
 
-  const handleVerifyClaim = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!serialQuery.trim()) return
-    setClaimStatus('checking')
-    setTimeout(() => {
-      if (serialQuery.length >= 4) {
-        setClaimStatus('valid')
-      } else {
-        setClaimStatus('invalid')
+  const debouncedQuery = useDebounce(serialQuery, 500)
+
+  useEffect(() => {
+    if (debouncedQuery.length < 4) {
+      setStatus('idle')
+      setVerifiedData(null)
+      return
+    }
+
+    const controller = new AbortController()
+
+    const checkWarranty = async () => {
+      setStatus('loading')
+      setError(null)
+      setVerifiedData(null)
+
+      try {
+        const result = await verifyWarrantyId(debouncedQuery, controller.signal)
+        if (result.valid) {
+          setStatus('valid')
+          setVerifiedData(result)
+        } else {
+          setStatus('invalid')
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setStatus('error')
+          setError('Network error. Please try again.')
+          console.error('Failed to verify warranty ID:', err)
+        }
       }
-    }, 800)
+    }
+
+    checkWarranty()
+
+    // This cleanup function aborts the request if the debouncedQuery changes,
+    // preventing race conditions and memory leaks.
+    return () => {
+      controller.abort()
+    }
+  }, [debouncedQuery])
+
+  const handleInitiateRefund = () => {
+    if (status !== 'valid' || !verifiedData) return
+    alert(`Initiating refund for ${verifiedData.deviceName}.`)
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Top Contract Summary Card */}
+      
       <Card>
         <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
-          Soroban Smart Escrow Vault & Bonded Staking
+          Veloxous Vault & Bonded Staking
         </h3>
         <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 16 }}>
-          Decentralized Customer Protection Engine
+         Customer Protection Engine
         </div>
 
         <div
@@ -45,7 +117,7 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
         >
           <div style={{ background: 'var(--bg-sunken)', padding: 16, borderRadius: 'var(--radius-input)' }}>
             <div style={{ fontSize: 12, color: 'var(--ink-40)', textTransform: 'uppercase', fontWeight: 600 }}>
-              Active Escrow Bond
+              Active Bond
             </div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--growth)', fontFamily: 'var(--font-data)' }}>
               {technician.stakedBondXLM.toLocaleString()} XLM
@@ -55,17 +127,6 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
             </div>
           </div>
 
-          <div style={{ background: 'var(--bg-sunken)', padding: 16, borderRadius: 'var(--radius-input)' }}>
-            <div style={{ fontSize: 12, color: 'var(--ink-40)', textTransform: 'uppercase', fontWeight: 600 }}>
-              Soroban Contract Address
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-data)', wordBreak: 'break-all', marginTop: 4 }}>
-              {technician.escrowContract}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--growth)', fontWeight: 600, marginTop: 4 }}>
-              ✓ Contract State: Fully Collateralized
-            </div>
-          </div>
 
           <div style={{ background: 'var(--bg-sunken)', padding: 16, borderRadius: 'var(--radius-input)' }}>
             <div style={{ fontSize: 12, color: 'var(--ink-40)', textTransform: 'uppercase', fontWeight: 600 }}>
@@ -75,29 +136,27 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
               0 Disputes Lost
             </div>
             <div style={{ fontSize: 13, color: 'var(--ink-60)' }}>
-              100% Satisfied Escrow Settlements
+              100% Satisfied Settlements
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Interactive Warranty Claim Check */}
       <Card>
         <h3 style={{ margin: '0 0 4px 0', fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
-          Instant Warranty & Smart Escrow Claim Verification
+          Instant Warranty & Claim Verification
         </h3>
         <div style={{ fontSize: 13, color: 'var(--ink-60)', marginBottom: 16 }}>
-          Check repair serial number or Stellar transaction hash
+          Check warranty status
         </div>
 
-        <form onSubmit={handleVerifyClaim} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <input
             type="text"
-            placeholder="Enter Repair ID or Stellar Tx Hash (e.g., a8b1c2d3)..."
+            placeholder="Enter Warranty ID..."
             value={serialQuery}
             onChange={(e) => {
               setSerialQuery(e.target.value)
-              setClaimStatus('idle')
             }}
             style={{
               flex: 1,
@@ -113,12 +172,12 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
             }}
           />
 
-          <Button variant="primary" size="md" type="submit" loading={claimStatus === 'checking'}>
-            Verify Coverage
+          <Button variant="primary" size="md" onClick={handleInitiateRefund} disabled={status !== 'valid'} loading={status === 'loading'}>
+            {status === 'loading' ? 'Verifying...' : 'Initiate Refund'}
           </Button>
-        </form>
+        </div>
 
-        {claimStatus === 'valid' && (
+        {status === 'valid' && verifiedData && (
           <div
             style={{
               marginTop: 16,
@@ -136,15 +195,16 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
           >
             <div>
               <div style={{ fontWeight: 700, fontSize: 15 }}>✓ Valid Active Smart Contract Warranty</div>
-              <div style={{ fontSize: 13, color: 'var(--ink-60)', marginTop: 2 }}>
-                Repair ID: {serialQuery} • Covered under 90-Day Escrow Payout Protection.
+              <div style={{ fontSize: 13, color: 'var(--ink-80)', marginTop: 4 }}>
+                Device: <strong>{verifiedData.deviceName}</strong> · Escrow Amount:{' '}
+                <strong>{verifiedData.escrowAmountUSDC?.toLocaleString()} USDC</strong>
               </div>
             </div>
-            <Badge tone="growth">Full Escrow Refund Ready</Badge>
+            <Badge tone="growth">Full Refund Ready</Badge>
           </div>
         )}
 
-        {claimStatus === 'invalid' && (
+        {(status === 'invalid' || status === 'error') && (
           <div
             style={{
               marginTop: 16,
@@ -155,9 +215,11 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
               color: 'var(--ember)',
             }}
           >
-            <div style={{ fontWeight: 700, fontSize: 14 }}>⚠️ Serial Number / Tx Hash Not Found</div>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>
+              {status === 'invalid' ? '✗ Invalid or Expired Warranty ID' : `⚠️ ${error}`}
+            </div>
             <div style={{ fontSize: 13, marginTop: 2 }}>
-              Please double check the ID from your repair receipt or wallet transaction log.
+              Please double-check the ID from your repair receipt.
             </div>
           </div>
         )}

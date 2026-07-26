@@ -99,17 +99,16 @@ export function WriteReviewModal({
           ✕
         </button>
 
-        <Badge tone="growth">✓ Verified Escrow Review</Badge>
+        <Badge tone="growth"> Verified Review</Badge>
 
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: '8px 0 4px 0', color: 'var(--ink)' }}>
           Write a Review for {technician.name}
         </h2>
         <p style={{ fontSize: 13.5, color: 'var(--ink-60)', margin: '0 0 20px 0' }}>
-          Your review will be attached to your Soroban smart contract repair receipt.
+          Your review will be attached to your repair receipt.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          {/* Star Rating Picker */}
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>
               Overall Experience Rating
@@ -138,7 +137,6 @@ export function WriteReviewModal({
             </div>
           </div>
 
-          {/* Author Name */}
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
               Your Name / Alias
@@ -162,7 +160,6 @@ export function WriteReviewModal({
             />
           </div>
 
-          {/* Device & Category Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
@@ -188,7 +185,7 @@ export function WriteReviewModal({
 
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
-                Stellar Tx Hash
+                Transaction ID
               </label>
               <input
                 type="text"
@@ -210,7 +207,6 @@ export function WriteReviewModal({
             </div>
           </div>
 
-          {/* Title */}
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
               Review Title
@@ -234,7 +230,6 @@ export function WriteReviewModal({
             />
           </div>
 
-          {/* Detailed Comment */}
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
               Review Details

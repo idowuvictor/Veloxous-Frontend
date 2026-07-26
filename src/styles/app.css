@@ -57,7 +57,6 @@
   gap: 24px;
 }
 
-/* --- Tablet ---------------------------------------------------------------- */
 @media (max-width: 960px) {
   .hb-how-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -74,7 +73,6 @@
   }
 }
 
-/* --- Phone ----------------------------------------------------------------- */
 @media (max-width: 680px) {
   .hb-counter-grid,
   .hb-how-grid,
@@ -130,7 +128,7 @@
 
   .hb-tech-cta-group {
     width: 100% !important;
-    order: 1 !important; /* Move CTA buttons above skills & gauge on mobile */
+    order: 1 !important; 
   }
 
   .hb-tech-cta-group button {
@@ -139,18 +137,17 @@
   }
 
   .hb-tech-skills-group {
-    order: 2 !important; /* Move Skills section below Request CTA on mobile */
+    order: 2 !important; 
     width: 100% !important;
   }
 
   .hb-tech-gauge-group {
-    order: 3 !important; /* Move Metrics Summary below Request CTA on mobile */
+    order: 3 !important; 
     width: 100% !important;
     justify-content: flex-start !important;
   }
 }
 
-/* Pill-shaped focus rings for IconButton and Tag — override base radius */
 .hb-icon-btn:focus-visible,
 .hb-tag:focus-visible {
   outline: 2px solid var(--focus-ring);

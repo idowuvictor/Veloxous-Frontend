@@ -19,7 +19,7 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
 
   return (
     <div>
-      {/* Category Filter Pills */}
+      
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
         {categories.map((cat: string) => (
           <button
@@ -43,7 +43,7 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
         ))}
       </div>
 
-      {/* Portfolio Items Grid */}
+     
       <div
         style={{
           display: 'grid',
@@ -73,7 +73,7 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
               e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
             }}
           >
-            {/* Before / After Image Split */}
+            
             <div style={{ position: 'relative', height: 180, background: 'var(--bg-sunken)', display: 'flex' }}>
               <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                 <img
@@ -115,7 +115,6 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
               </div>
             </div>
 
-            {/* Content Details */}
             <div style={{ padding: 20 }}>
               <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                 <Tag>{item.category}</Tag>
@@ -162,7 +161,6 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
         ))}
       </div>
 
-      {/* Case Details Modal */}
       {selectedCase && (
         <div
           style={{
