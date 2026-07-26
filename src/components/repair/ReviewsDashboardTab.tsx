@@ -69,8 +69,6 @@ export function ReviewsDashboardTab({
   const totalCount = technician.totalReviews
   const breakdown = technician.ratingBreakdown
 
-  const disputesLost = technician.disputesLost ?? 0
-  const disputeRatio = technician.completedRepairs > 0 ? (disputesLost / technician.completedRepairs) * 100 : 0
   const allReviewsVerified = reviews.length > 0 && reviews.every((r) => r.isVerifiedEscrow)
 
   const renderStars = (rating: number) => {
@@ -140,17 +138,17 @@ export function ReviewsDashboardTab({
             background: 'var(--bg-sunken)',
             padding: 16,
             borderRadius: 'var(--radius-input)',
-            borderLeft: `4px solid ${disputesLost === 0 ? 'var(--growth)' : 'var(--ember)'}`,
+            borderLeft: `4px solid ${technician.disputesLost === 0 ? 'var(--growth)' : 'var(--ember)'}`,
           }}
         >
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-60)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Dispute Ratio
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontFamily: 'var(--font-data)', marginTop: 4 }}>
-            {disputeRatio.toFixed(1)}%
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: technician.disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontFamily: 'var(--font-data)', marginTop: 4 }}>
+            {technician.disputeRatio.toFixed(1)}%
           </div>
-          <div style={{ fontSize: 12.5, color: disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontWeight: 600, marginTop: 2 }}>
-            {disputesLost} Lost Disputes out of {technician.completedRepairs} Jobs
+          <div style={{ fontSize: 12.5, color: technician.disputesLost === 0 ? 'var(--growth)' : 'var(--ember)', fontWeight: 600, marginTop: 2 }}>
+            {technician.disputesLost} Lost Disputes out of {technician.completedRepairs} Jobs
           </div>
         </div>
       </div>

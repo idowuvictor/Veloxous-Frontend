@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Modal } from './Modal'
 import { RepairPortfolioItem } from '@/types/technician'
 import { Badge, Tag, Button } from '@/components/index'
 
@@ -162,38 +163,8 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
       </div>
 
       {selectedCase && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-          }}
-          onClick={() => setSelectedCase(null)}
-        >
-          <div
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--ink-12)',
-              borderRadius: 'var(--radius-card)',
-              maxWidth: 640,
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              padding: 28,
-              position: 'relative',
-              boxShadow: 'var(--shadow-lg)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <Modal onClose={() => setSelectedCase(null)} titleId="portfolio-modal-title">
+          <>
             <button
               type="button"
               onClick={() => setSelectedCase(null)}
@@ -216,11 +187,11 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
               <Badge tone="solar">Stellar Tx: {selectedCase.stellarTxHash}</Badge>
             </div>
 
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, margin: '8px 0', color: 'var(--ink)' }}>
+            <h2 id="portfolio-modal-title" style={{ fontFamily: 'var(--font-display)', fontSize: 20, margin: '8px 0', color: 'var(--ink)' }}>
               {selectedCase.title}
             </h2>
 
-            <div style={{ fontSize: 13.5, color: 'var(--ink-60)', marginBottom: 20 }}>
+            <div style={{ fontSize: 13.5, color: 'var(--ink-60)', marginBottom: 20 }} id="portfolio-modal-desc">
               Device: <strong style={{ color: 'var(--ink)' }}>{selectedCase.device}</strong> • Repair Date: {selectedCase.date}
             </div>
 
@@ -276,8 +247,8 @@ export function PortfolioTab({ portfolio }: PortfolioTabProps) {
                 Close Record
               </Button>
             </div>
-          </div>
-        </div>
+          </>
+        </Modal>
       )}
     </div>
   )

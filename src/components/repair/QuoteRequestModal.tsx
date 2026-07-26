@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
+import { Modal } from './Modal'
 import { TechnicianProfile, PricingItem } from '@/types/technician'
 import { Button, Badge, AmountInput } from '@/components/index'
 import { uploadFileToS3 } from '@/services/s3UploadService'
@@ -32,7 +33,6 @@ export function QuoteRequestModal({
   onSubmitSuccess,
 }: QuoteRequestModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
-  const modalRef = useRef<HTMLDivElement>(null)
 
   const [deviceCategory, setDeviceCategory] = useState(initialCategory || 'MacBook Pro / Air')
   const [deviceModel, setDeviceModel] = useState('MacBook Pro 16" (2023, M2 Max)')
@@ -56,49 +56,6 @@ export function QuoteRequestModal({
 
   const isStep2NextDisabled =
     (isPhotoRequired && successfulUploads.length === 0) || isUploading
-
-  useEffect(() => {
-    const modalEl = modalRef.current
-    if (!modalEl) return
-
-    const focusables = modalEl.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )
-    if (focusables.length > 0) {
-      focusables[0].focus()
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        onClose()
-        return
-      }
-
-      if (e.key === 'Tab') {
-        const currentFocusables = Array.from(
-          modalEl.querySelectorAll<HTMLElement>(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-          )
-        )
-        if (!currentFocusables.length) return
-
-        const firstEl = currentFocusables[0]
-        const lastEl = currentFocusables[currentFocusables.length - 1]
-
-        if (e.shiftKey && document.activeElement === firstEl) {
-          e.preventDefault()
-          lastEl.focus()
-        } else if (!e.shiftKey && document.activeElement === lastEl) {
-          e.preventDefault()
-          firstEl.focus()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose, step])
 
   const handleRealS3Upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -167,32 +124,8 @@ export function QuoteRequestModal({
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0,0,0,0.65)',
-        backdropFilter: 'blur(6px)',
-        zIndex: 1200,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      onClick={onClose}
-    >
-      <div
-        ref={modalRef}
-        className="hb-modal-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="wizard-title"
-        aria-describedby="wizard-desc"
-        onClick={(e) => e.stopPropagation()}
-      >
-        
+    <Modal onClose={onClose} titleId="wizard-title" descriptionId="wizard-desc">
+      <>
         <button
           type="button"
           onClick={onClose}
@@ -560,8 +493,8 @@ export function QuoteRequestModal({
             </div>
           </form>
         )}
-      </div>
-    </div>
+      </>
+    </Modal>
   )
 }
 

@@ -282,15 +282,15 @@ export function TechnicianHeader({
               flexWrap: 'wrap',
               marginBottom: 12,
             }}
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700, color: 'var(--ink)' }}>
-              ⭐ {technician.rating.toFixed(2)} ({technician.totalReviews} verified reviews)
-            </span>
+          > 
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700, color: 'var(--ink)' }}> 
+               {(technician.rating ?? 0).toFixed(2)} ({technician.totalReviews} verified reviews) 
+            </span> 
             <span style={{ fontWeight: 600, color: 'var(--ink)' }}>
-              📍 {locationText}
+               {locationText}
             </span>
-            <span>⏱️ Avg response {technician.responseTime}</span>
-            <span>🎓 {technician.experienceYears} Years exp.</span>
+            <span> Avg response {technician.responseTime}</span>
+            <span> {technician.experienceYears} Years exp.</span>
           </div>
 
           {/* Skills & Specialties Tags Section */}

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Modal } from './Modal'
 import { TechnicianProfile, TechnicianReview } from '@/types/technician'
 import { Button, Badge } from '@/components/index'
 
@@ -21,15 +22,24 @@ export function WriteReviewModal({
   const [rating, setRating] = useState(5)
   const [title, setTitle] = useState('')
   const [comment, setComment] = useState('')
-  const [txHash, setTxHash] = useState('a8b1...e4f5')
+  const [txHash, setTxHash] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const isValidStellarTxHash = (hash: string): boolean => {
+    return /^[a-f0-9]{64}$/i.test(hash)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !comment.trim() || !authorName.trim()) return
 
     setIsSubmitting(true)
-    setTimeout(() => {
+  }
+
+  useEffect(() => {
+    if (!isSubmitting) return
+
+    const timer = setTimeout(() => {
       setIsSubmitting(false)
       const review: TechnicianReview = {
         id: `rev-${Date.now()}`,
@@ -41,47 +51,22 @@ export function WriteReviewModal({
         repairCategory,
         title,
         comment,
-        isVerifiedEscrow: true,
+        isVerifiedEscrow: isValidStellarTxHash(txHash),
         stellarTxHash: txHash,
         helpfulCount: 0,
       }
       onSubmitReview(review)
     }, 800)
-  }
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [isSubmitting, authorName, comment, deviceType, onSubmitReview, rating, repairCategory, technician.id, title, txHash])
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0,0,0,0.65)',
-        backdropFilter: 'blur(6px)',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--ink-12)',
-          borderRadius: 'var(--radius-card)',
-          maxWidth: 580,
-          width: '100%',
-          maxHeight: '92vh',
-          overflowY: 'auto',
-          padding: 32,
-          position: 'relative',
-          boxShadow: 'var(--shadow-lg)',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Modal onClose={onClose} titleId="review-modal-title" descriptionId="review-modal-desc">
+      {/* The outer div is gone, and the inner div is now the root of the modal's content */}
+      <>
         <button
           type="button"
           onClick={onClose}
@@ -101,10 +86,10 @@ export function WriteReviewModal({
 
         <Badge tone="growth"> Verified Review</Badge>
 
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: '8px 0 4px 0', color: 'var(--ink)' }}>
+        <h2 id="review-modal-title" style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: '8px 0 4px 0', color: 'var(--ink)' }}>
           Write a Review for {technician.name}
         </h2>
-        <p style={{ fontSize: 13.5, color: 'var(--ink-60)', margin: '0 0 20px 0' }}>
+        <p id="review-modal-desc" style={{ fontSize: 13.5, color: 'var(--ink-60)', margin: '0 0 20px 0' }}>
           Your review will be attached to your repair receipt.
         </p>
 
@@ -192,6 +177,7 @@ export function WriteReviewModal({
                 required
                 value={txHash}
                 onChange={(e) => setTxHash(e.target.value)}
+                placeholder="e.g. a8b1..."
                 style={{
                   width: '100%',
                   padding: '10px 14px',
@@ -263,7 +249,7 @@ export function WriteReviewModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </>
+    </Modal>
   )
 }

@@ -40,14 +40,15 @@ export function TechnicianStatsGrid({ technician }: TechnicianStatsGridProps) {
         label="E-Waste Diverted"
         value={`${technician.ewasteSavedKg.toLocaleString()}`}
         unit="kg"
-        delta={`+${(technician.carbonSavedKg / 1000).toFixed(1)}t CO₂e`}
+        delta={`+${((technician.carbonSavedKg ?? 0) / 1000).toFixed(1)}t CO₂e`}
         deltaDirection="up"
       />
 
       <StatBlock
-        label="Staked Collateral"
-        value={`$${technician.stakedBondUSD.toLocaleString()}`}
-        unit="USD"
+        label="Dispute Ratio"
+        value={`${(technician.disputeRatio ?? 0).toFixed(1)}%`}
+        delta={`${technician.disputesLost} lost`}
+        deltaDirection={technician.disputeRatio === 0 ? 'up' : 'down'}
       />
     </div>
   )
