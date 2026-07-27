@@ -18,3 +18,18 @@ export { Toast } from './Toast'
 export type { ToastProps, ToastTone } from './Toast'
 export { Card } from './Card'
 export type { CardProps } from './Card'
+
+// Swap components
+export {
+  DeviceCard,
+  ValueWarning,
+  CountdownTimer,
+  SwapActions,
+  TransactionOverlay,
+  BalanceWarning,
+  parseHorizonError,
+  SwapWebSocketProvider,
+  useSwapWebSocket,
+  DualPaneSwap,
+} from './swaps'
+export type { SwapState, TransactionStep, Device, Swap, SwapAction } from './swaps'
