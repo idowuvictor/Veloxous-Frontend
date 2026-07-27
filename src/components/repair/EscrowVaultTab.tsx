@@ -54,8 +54,6 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
 
   useEffect(() => {
     if (debouncedQuery.length < 4) {
-      setStatus('idle')
-      setVerifiedData(null)
       return
     }
 
@@ -157,6 +155,9 @@ export function EscrowVaultTab({ technician }: EscrowVaultTabProps) {
             value={serialQuery}
             onChange={(e) => {
               setSerialQuery(e.target.value)
+              setStatus('idle')
+              setError(null)
+              setVerifiedData(null)
             }}
             style={{
               flex: 1,

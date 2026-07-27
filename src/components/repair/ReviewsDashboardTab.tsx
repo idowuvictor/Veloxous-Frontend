@@ -406,7 +406,6 @@ export function ReviewsDashboardTab({
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                      {/* Prominent Verified Transaction Checkmark Badge */}
                       {rev.isVerifiedEscrow && (
                         <Badge tone="growth" style={{ padding: '6px 12px', fontSize: 12.5 }}>
                           <span style={{ fontSize: 14, marginRight: 2 }}>✓</span> Verified Transaction — Escrow Backed
@@ -505,7 +504,7 @@ export function ReviewsDashboardTab({
                     }}
                   >
                     <span style={{ fontFamily: 'var(--font-data)', color: 'var(--ink-40)' }}>
-                     Transaction ID: <code style={{ color: 'var(--ink-60)' }}></code>
+                     Transaction ID: <code style={{ color: 'var(--ink-60)' }}>Nil</code>
                     </span>
 
                     <button

@@ -8,6 +8,8 @@ interface TechnicianStatsGridProps {
 }
 
 export function TechnicianStatsGrid({ technician }: TechnicianStatsGridProps) {
+  const disputeRatio = technician.disputeRatio ?? 0
+
   return (
     <div
       style={{
@@ -46,9 +48,9 @@ export function TechnicianStatsGrid({ technician }: TechnicianStatsGridProps) {
 
       <StatBlock
         label="Dispute Ratio"
-        value={`${(technician.disputeRatio ?? 0).toFixed(1)}%`}
+        value={`${disputeRatio.toFixed(1)}%`}
         delta={`${technician.disputesLost} lost`}
-        deltaDirection={technician.disputeRatio === 0 ? 'up' : 'down'}
+        deltaDirection={disputeRatio === 0 ? 'up' : 'down'}
       />
     </div>
   )

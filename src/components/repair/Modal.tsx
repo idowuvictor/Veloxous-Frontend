@@ -11,6 +11,12 @@ interface ModalProps {
 
 export function Modal({ children, onClose, titleId, descriptionId }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
+  const onCloseRef = useRef(onClose)
+
+  // Keep the ref updated with the latest onClose function without re-triggering the effect
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
 
   // Handle Escape key and focus trapping
   useEffect(() => {
@@ -28,7 +34,7 @@ export function Modal({ children, onClose, titleId, descriptionId }: ModalProps)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
-        onClose()
+        onCloseRef.current()
         return
       }
 
@@ -55,7 +61,7 @@ export function Modal({ children, onClose, titleId, descriptionId }: ModalProps)
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [])
 
   return (
     <div
