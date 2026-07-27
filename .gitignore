@@ -15,8 +15,8 @@ npm_cache_temp
 
 # debug / env
 *.local
-.env*.local
-
+.env*
+!.env.example
 # design handoff bundle — reference only, not part of the app
 .design-handoff
 .vercel

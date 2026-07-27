@@ -202,7 +202,6 @@
   gap: 24px;
 }
 
-/* --- Tablet ---------------------------------------------------------------- */
 @media (max-width: 960px) {
   .hb-how-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -219,7 +218,6 @@
   }
 }
 
-/* --- Phone ----------------------------------------------------------------- */
 @media (max-width: 680px) {
   .hb-counter-grid,
   .hb-how-grid,
