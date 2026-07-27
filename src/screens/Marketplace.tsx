@@ -9,7 +9,6 @@ export function Marketplace() {
       <p style={{ color: 'var(--ink-60)', fontSize: '1.2rem', marginBottom: '32px' }}>Browse verified electronics, locked safely in Soroban escrow.</p>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-        {/* Placeholder item */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--ink-12)', padding: '24px', borderRadius: 'var(--radius-card)' }}>
           <h3 style={{ margin: '0 0 8px', color: 'var(--ink)' }}>iPhone 13 Pro</h3>
           <p style={{ color: 'var(--ink-60)', margin: '0 0 16px' }}>Condition: Excellent • 256GB</p>
