@@ -7,6 +7,8 @@ export type SwapState =
   | 'cancelled'
   | 'rejected'
 
+export type TransactionStep = 'waiting' | 'signing' | 'submitting' | 'confirmed' | 'failed'
+
 export interface Device {
   id: string
   name: string
