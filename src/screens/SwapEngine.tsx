@@ -1,32 +1,50 @@
 'use client'
 
-import { Button } from '../components'
+import { DualPaneSwap } from '../components/swaps'
+import type { Swap } from '../components/swaps'
+
+const mockSwap: Swap = {
+  id: 'swap-demo-123',
+  userDevice: {
+    id: 'device-1',
+    name: 'iPhone 13 Pro',
+    model: 'A2639',
+    condition: 'good',
+    imageUrl: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+    valueUsd: 200,
+    collateralUsdc: 200,
+    ownerId: 'user-1',
+    ownerName: 'John Doe',
+  },
+  targetDevice: {
+    id: 'device-2',
+    name: 'iPhone 15 Pro',
+    model: 'A3102',
+    condition: 'like_new',
+    imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',
+    valueUsd: 500,
+    collateralUsdc: 500,
+    ownerId: 'user-2',
+    ownerName: 'Jane Smith',
+  },
+  state: 'negotiation',
+  createdAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  collateralDeadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+}
 
 export function SwapEngine() {
   return (
-    <main style={{ maxWidth: 1320, margin: '0 auto', padding: '64px 32px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '3rem', color: 'var(--ink)' }}>Swap Engine</h1>
-      <p style={{ color: 'var(--ink-60)', fontSize: '1.2rem', marginBottom: '32px' }}>Trade your old gadgets for new ones with collateralized escrow.</p>
-      
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 300px', background: 'var(--surface)', border: '1px solid var(--ink-12)', padding: '24px', borderRadius: 'var(--radius-card)' }}>
-          <h3 style={{ color: 'var(--ink)', margin: '0 0 8px' }}>Your Item</h3>
-          <p style={{ color: 'var(--ink-60)', margin: '0 0 16px' }}>Select an item from your inventory</p>
-          <Button variant="secondary" size="sm">Select Item</Button>
-        </div>
-        
-        <div style={{ fontSize: '2rem', color: 'var(--ink-40)' }}>⇌</div>
-        
-        <div style={{ flex: '1 1 300px', background: 'var(--surface)', border: '1px solid var(--ink-12)', padding: '24px', borderRadius: 'var(--radius-card)' }}>
-          <h3 style={{ color: 'var(--ink)', margin: '0 0 8px' }}>Target Item</h3>
-          <p style={{ color: 'var(--ink-60)', margin: '0 0 16px' }}>Select an item you want to swap for</p>
-          <Button variant="secondary" size="sm">Browse</Button>
-        </div>
-      </div>
-      
-      <div style={{ marginTop: '32px', textAlign: 'center' }}>
-        <Button variant="primary" size="lg">Calculate Collateral</Button>
-      </div>
-    </main>
+    <DualPaneSwap
+      swap={mockSwap}
+      isUserInitiator={true}
+      userUsdcBalance={750}
+      onPropose={() => console.log('Propose swap')}
+      onCounter={() => console.log('Counter offer')}
+      onAccept={() => console.log('Accept swap')}
+      onReject={() => console.log('Reject swap')}
+      onCancel={() => console.log('Cancel swap')}
+      onFiatOnRamp={() => console.log('Navigate to fiat on-ramp')}
+    />
   )
 }
