@@ -1,7 +1,8 @@
-import { type HTMLAttributes, type ReactNode } from 'react'
+import { type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
+  style?: CSSProperties
 }
 
 export function Card({ children, style, ...props }: CardProps) {

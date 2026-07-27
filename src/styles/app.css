@@ -9,7 +9,152 @@
    can reach them.
    =========================================================================== */
 
-/* --- Section grids (desktop values mirror the source prototype) ----------- */
+/* --- Mobile Filter Button Helper (Visible ONLY on small screens < 768px) --- */
+.hb-mobile-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--ink-12);
+  background: var(--bg-sunken);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .hb-mobile-filter-btn {
+    display: none !important;
+  }
+}
+
+.hb-marketplace-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+.hb-main-products-area {
+  min-width: 0; 
+}
+
+.hb-filter-sidebar-wrapper {
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  width: 280px;
+  max-width: 280px;
+}
+
+@media (max-width: 1024px) {
+  .hb-marketplace-layout {
+    grid-template-columns: 1fr 240px;
+    gap: 24px;
+  }
+  .hb-filter-sidebar-wrapper {
+    width: 240px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hb-marketplace-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hb-filter-sidebar-wrapper {
+    width: 100%;
+    max-width: 100%;
+    position: static;
+  }
+
+  .hb-filter-sidebar {
+    display: none !important;
+  }
+
+  .hb-filter-sidebar.hb-drawer-open {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    z-index: 1300 !important;
+    border-radius: var(--radius-card) var(--radius-card) 0 0 !important;
+    max-height: 88vh !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-shadow: var(--shadow-lg) !important;
+    animation: hb-rise 300ms ease-out !important;
+  }
+}
+
+.animate-pulse {
+  animation: hb-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-6 {
+  gap: 20px;
+}
+
+.gap-8 {
+  gap: 28px;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.hb-responsive-device-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .hb-responsive-device-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .hb-responsive-device-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .hb-responsive-device-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .hb-hero-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -94,7 +239,6 @@
   }
 }
 
-/* --- Technician Profile & Wizard Responsive Layout Rules --------------- */
 .hb-modal-dialog {
   background: var(--surface);
   border: 1px solid var(--ink-12);
@@ -117,34 +261,6 @@
     max-height: 100vh !important;
     border-radius: 0 !important;
     padding: 24px 16px !important;
-  }
-
-  .hb-tech-header-body {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    margin-top: -40px !important;
-    gap: 16px !important;
-  }
-
-  .hb-tech-cta-group {
-    width: 100% !important;
-    order: 1 !important; 
-  }
-
-  .hb-tech-cta-group button {
-    flex: 1 !important;
-    width: 100% !important;
-  }
-
-  .hb-tech-skills-group {
-    order: 2 !important; 
-    width: 100% !important;
-  }
-
-  .hb-tech-gauge-group {
-    order: 3 !important; 
-    width: 100% !important;
-    justify-content: flex-start !important;
   }
 }
 
