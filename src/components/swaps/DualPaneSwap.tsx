@@ -16,7 +16,6 @@ interface DualPaneSwapProps {
   swap: Swap
   isUserInitiator?: boolean
   userUsdcBalance?: number
-  onPropose?: () => void
   onCounter?: () => void
   onAccept?: () => void
   onReject?: () => void
@@ -28,7 +27,6 @@ function DualPaneSwapContent({
   swap,
   isUserInitiator = true,
   userUsdcBalance = 0,
-  onPropose,
   onCounter,
   onAccept,
   onReject,
@@ -166,7 +164,6 @@ function DualPaneSwapContent({
 
       <SwapActions
         state={state}
-        onPropose={onPropose || (() => {})}
         onCounter={onCounter || (() => {})}
         onAccept={onAccept || (() => {})}
         onReject={onReject || (() => {})}

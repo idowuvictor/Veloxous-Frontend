@@ -39,7 +39,6 @@ export function SwapEngine() {
       swap={mockSwap}
       isUserInitiator={true}
       userUsdcBalance={750}
-      onPropose={() => console.log('Propose swap')}
       onCounter={() => console.log('Counter offer')}
       onAccept={() => console.log('Accept swap')}
       onReject={() => console.log('Reject swap')}

@@ -27,11 +27,9 @@ export function SwapWebSocketProvider({ children, wsUrl = 'ws://localhost:8080' 
   const [state, setState] = useState<SwapState>('negotiation')
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<string | null>(null)
-  const [currentSwapId, setCurrentSwapId] = useState<string | null>(null)
   const [ws, setWs] = useState<WebSocket | null>(null)
 
   const subscribe = (swapId: string): (() => void) => {
-    setCurrentSwapId(swapId)
 
     if (ws) {
       ws.close()

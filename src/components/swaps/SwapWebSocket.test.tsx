@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import { useEffect } from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { SwapWebSocketProvider, useSwapWebSocket } from './SwapWebSocket'
 
@@ -18,7 +19,11 @@ describe('SwapWebSocket', () => {
       removeEventListener: vi.fn(),
     }
 
-    global.WebSocket = vi.fn(() => mockWebSocket) as any
+    global.WebSocket = class {
+      constructor() {
+        return mockWebSocket
+      }
+    } as any
   })
 
   afterEach(() => {
@@ -42,7 +47,8 @@ describe('SwapWebSocket', () => {
 
   it('should update state when WebSocket receives message', async () => {
     const TestComponent = () => {
-      const { state } = useSwapWebSocket()
+      const { state, subscribe } = useSwapWebSocket()
+      useEffect(() => { subscribe('123') }, [])
       return <div data-testid="state">{state}</div>
     }
 
@@ -52,9 +58,7 @@ describe('SwapWebSocket', () => {
       </SwapWebSocketProvider>
     )
 
-    const onMessageCallback = mockWebSocket.addEventListener.mock.calls.find(
-      (call: any) => call[0] === 'message'
-    )?.[1]
+    const onMessageCallback = (mockWebSocket as any).onmessage
 
     if (onMessageCallback) {
       onMessageCallback({ data: JSON.stringify({ state: 'agreed_awaiting_collateral' }) })
@@ -67,7 +71,8 @@ describe('SwapWebSocket', () => {
 
   it('should transition from negotiation to agreed_awaiting_collateral on accept', async () => {
     const TestComponent = () => {
-      const { state } = useSwapWebSocket()
+      const { state, subscribe } = useSwapWebSocket()
+      useEffect(() => { subscribe('123') }, [])
       return <div data-testid="state">{state}</div>
     }
 
@@ -77,9 +82,7 @@ describe('SwapWebSocket', () => {
       </SwapWebSocketProvider>
     )
 
-    const onMessageCallback = mockWebSocket.addEventListener.mock.calls.find(
-      (call: any) => call[0] === 'message'
-    )?.[1]
+    const onMessageCallback = (mockWebSocket as any).onmessage
 
     if (onMessageCallback) {
       onMessageCallback({ data: JSON.stringify({ state: 'agreed_awaiting_collateral' }) })
@@ -94,7 +97,8 @@ describe('SwapWebSocket', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const TestComponent = () => {
-      const { state } = useSwapWebSocket()
+      const { state, subscribe } = useSwapWebSocket()
+      useEffect(() => { subscribe('123') }, [])
       return <div data-testid="state">{state}</div>
     }
 
@@ -104,9 +108,7 @@ describe('SwapWebSocket', () => {
       </SwapWebSocketProvider>
     )
 
-    const onMessageCallback = mockWebSocket.addEventListener.mock.calls.find(
-      (call: any) => call[0] === 'message'
-    )?.[1]
+    const onMessageCallback = (mockWebSocket as any).onmessage
 
     if (onMessageCallback) {
       onMessageCallback({ data: 'invalid json' })
@@ -121,7 +123,10 @@ describe('SwapWebSocket', () => {
 
   it('should set connected to true when WebSocket opens', async () => {
     const TestComponent = () => {
-      const { isConnected } = useSwapWebSocket()
+      const { isConnected, subscribe } = useSwapWebSocket()
+      
+      useEffect(() => { subscribe('123') }, [])
+      
       return <div data-testid="connected">{isConnected.toString()}</div>
     }
 
@@ -131,9 +136,7 @@ describe('SwapWebSocket', () => {
       </SwapWebSocketProvider>
     )
 
-    const onOpenCallback = mockWebSocket.addEventListener.mock.calls.find(
-      (call: any) => call[0] === 'open'
-    )?.[1]
+    const onOpenCallback = (mockWebSocket as any).onopen
 
     if (onOpenCallback) {
       onOpenCallback()
@@ -145,9 +148,16 @@ describe('SwapWebSocket', () => {
   })
 
   it('should close WebSocket on unmount', () => {
+    const TestComponent = () => {
+      const { subscribe } = useSwapWebSocket()
+      
+      useEffect(() => { subscribe('123') }, [])
+      
+      return <div>Test</div>
+    }
     const { unmount } = render(
       <SwapWebSocketProvider>
-        <div>Test</div>
+        <TestComponent />
       </SwapWebSocketProvider>
     )
 

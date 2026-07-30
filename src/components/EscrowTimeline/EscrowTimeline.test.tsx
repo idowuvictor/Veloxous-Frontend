@@ -36,12 +36,25 @@ describe('EscrowTimeline', () => {
     
     // First click shows confirmation
     fireEvent.click(disputeBtn);
-    expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure\? Opening a dispute is irreversible/i)).toBeInTheDocument();
     
     // Second click confirms
     const confirmBtn = screen.getByText('Yes, open dispute');
     fireEvent.click(confirmBtn);
     
     expect(handleAction).toHaveBeenCalledWith('2', 'dispute');
+  });
+
+  it('does not render action buttons for released or disputed steps', () => {
+    const handleAction = vi.fn();
+    const finalSteps: TimelineStep[] = [
+      { id: '1', title: 'Funded', description: 'desc', status: 'completed' },
+      { id: '2', title: 'Released Step', description: 'desc', status: 'released' },
+      { id: '3', title: 'Disputed Step', description: 'desc', status: 'disputed' },
+    ];
+    render(<EscrowTimeline steps={finalSteps} onAction={handleAction} />);
+    
+    expect(screen.queryByText('Release Funds')).not.toBeInTheDocument();
+    expect(screen.queryByText('Open Dispute')).not.toBeInTheDocument();
   });
 });

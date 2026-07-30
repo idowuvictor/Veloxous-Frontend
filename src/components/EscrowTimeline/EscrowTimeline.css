@@ -70,6 +70,30 @@
   border-radius: 50%;
 }
 
+/* Status: Released */
+.vx-timeline__node--released {
+  background-color: var(--growth);
+  color: var(--surface);
+  box-shadow: 0 0 0 4px var(--growth-12);
+}
+
+/* Status: Awaiting Funds */
+.vx-timeline__node--awaiting_funds {
+  background-color: var(--surface);
+  border: 2px solid var(--solar);
+  box-shadow: 0 0 0 4px var(--solar-12);
+}
+
+/* Status: Disputed */
+.vx-timeline__node--disputed {
+  background-color: var(--surface);
+  border: 2px solid var(--ember);
+  box-shadow: 0 0 0 4px var(--ember-12);
+}
+.vx-timeline__node--disputed .vx-timeline-current-dot {
+  background-color: var(--ember);
+}
+
 /* Status: Upcoming */
 .vx-timeline__node--upcoming {
   background-color: var(--surface);
@@ -183,8 +207,8 @@
   color: var(--text-strong);
 }
 .vx-btn--danger {
-  background: red;
-  color: white;
+  background: var(--ember);
+  color: var(--surface);
 }
 .vx-btn--ghost {
   background: transparent;

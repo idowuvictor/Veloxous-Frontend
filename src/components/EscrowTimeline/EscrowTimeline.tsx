@@ -18,6 +18,7 @@ export interface EscrowTimelineProps {
   steps: TimelineStep[];
   className?: string;
   userRole?: 'buyer' | 'seller';
+  network?: 'testnet' | 'public';
   onAction?: (stepId: string, actionType: 'release' | 'dispute') => void;
 }
 
@@ -31,7 +32,7 @@ const CurrentIcon = () => (
   <div className="vx-timeline-current-dot" />
 );
 
-export const EscrowTimeline: React.FC<EscrowTimelineProps> = ({ steps, className = '', userRole, onAction }) => {
+export const EscrowTimeline: React.FC<EscrowTimelineProps> = ({ steps, className = '', userRole, network = 'testnet', onAction }) => {
   const [mounted, setMounted] = useState(false);
   const [disputeConfirming, setDisputeConfirming] = useState<string | null>(null);
 
@@ -78,14 +79,16 @@ export const EscrowTimeline: React.FC<EscrowTimelineProps> = ({ steps, className
                 <p className="vx-timeline__desc">{step.description}</p>
                 
                 {step.timestamp && (
-                  <span className="vx-timeline__timestamp">{new Date(step.timestamp).toLocaleString()}</span>
+                  <span className="vx-timeline__timestamp">
+                    {new Date(step.timestamp).toLocaleString('en-US', { timeZone: 'UTC' })}
+                  </span>
                 )}
                 {step.date && !step.timestamp && (
                   <span className="vx-timeline__date">{step.date}</span>
                 )}
                 
                 {step.txHash && (
-                  <a href={`https://stellar.expert/explorer/testnet/tx/${step.txHash}`} target="_blank" rel="noopener noreferrer" className="vx-timeline__tx-link">
+                  <a href={`https://stellar.expert/explorer/${network}/tx/${step.txHash}`} target="_blank" rel="noopener noreferrer" className="vx-timeline__tx-link">
                     View on Stellar Expert
                   </a>
                 )}
@@ -101,7 +104,7 @@ export const EscrowTimeline: React.FC<EscrowTimelineProps> = ({ steps, className
                     </button>
                     {disputeConfirming === step.id ? (
                       <div className="vx-timeline__dispute-confirm">
-                        <span>Are you sure?</span>
+                        <span className="vx-timeline__dispute-warning">Are you sure? Opening a dispute is irreversible and funds will be frozen pending resolution.</span>
                         <button className="vx-btn vx-btn--danger" onClick={() => { setDisputeConfirming(null); onAction(step.id, 'dispute'); }}>Yes, open dispute</button>
                         <button className="vx-btn vx-btn--ghost" onClick={() => setDisputeConfirming(null)}>Cancel</button>
                       </div>

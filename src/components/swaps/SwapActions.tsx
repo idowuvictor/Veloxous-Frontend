@@ -5,7 +5,6 @@ import { SwapState } from './types'
 
 interface SwapActionsProps {
   state: SwapState
-  onPropose: () => void
   onCounter: () => void
   onAccept: () => void
   onReject: () => void
@@ -16,7 +15,6 @@ interface SwapActionsProps {
 
 export function SwapActions({
   state,
-  onPropose,
   onCounter,
   onAccept,
   onReject,
