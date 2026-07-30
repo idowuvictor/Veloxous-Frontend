@@ -1,0 +1,143 @@
+/* Escrow Timeline Styles */
+.vx-timeline {
+  padding: var(--space-md) 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--dur-modal) var(--ease-out), transform var(--dur-modal) var(--ease-out);
+}
+
+.vx-timeline--mounted {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vx-timeline__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.vx-timeline__item {
+  display: flex;
+  gap: var(--space-md);
+  position: relative;
+  /* Animate in */
+  opacity: 0;
+  animation: vx-fade-in var(--dur-modal) var(--ease-out) forwards;
+}
+
+.vx-timeline__visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 24px;
+}
+
+.vx-timeline__node {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+  transition: all var(--dur-sheet) var(--ease-out);
+}
+
+/* Status: Completed */
+.vx-timeline__node--completed {
+  background-color: var(--growth);
+  color: var(--surface);
+  box-shadow: 0 0 0 4px var(--growth-12);
+}
+
+.vx-timeline-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Status: Current */
+.vx-timeline__node--current {
+  background-color: var(--surface);
+  border: 2px solid var(--solar);
+  box-shadow: 0 0 0 4px var(--solar-12);
+}
+
+.vx-timeline-current-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--solar);
+  border-radius: 50%;
+}
+
+/* Status: Upcoming */
+.vx-timeline__node--upcoming {
+  background-color: var(--surface);
+  border: 2px solid var(--ink-12);
+}
+
+/* Connecting Line */
+.vx-timeline__line {
+  width: 2px;
+  flex-grow: 1;
+  background-color: var(--ink-12);
+  margin: 4px 0;
+  border-radius: 2px;
+}
+
+.vx-timeline__line--active {
+  background-color: var(--growth);
+  opacity: 0.5;
+}
+
+/* Content */
+.vx-timeline__content {
+  padding-bottom: var(--space-xl);
+  padding-top: 2px;
+}
+
+.vx-timeline__item:last-child .vx-timeline__content {
+  padding-bottom: 0;
+}
+
+.vx-timeline__title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.vx-timeline__item--upcoming .vx-timeline__title {
+  color: var(--text-secondary);
+}
+
+.vx-timeline__desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.vx-timeline__item--upcoming .vx-timeline__desc {
+  color: var(--text-tertiary);
+}
+
+.vx-timeline__date {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-xs);
+  font-family: monospace;
+}
+
+@keyframes vx-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

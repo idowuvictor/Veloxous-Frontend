@@ -33,3 +33,6 @@ export {
   DualPaneSwap,
 } from './swaps'
 export type { SwapState, TransactionStep, Device, Swap, SwapAction } from './swaps'
+
+export { EscrowTimeline } from './EscrowTimeline/EscrowTimeline'
+export type { TimelineStep } from './EscrowTimeline/EscrowTimeline'
