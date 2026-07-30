@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test'
 
+declare global {
+  interface Window {
+    __USER_USDC_BALANCE__?: number;
+    __MOCK_TRANSACTION_ERROR__?: any;
+    __MOCK_WEBSOCKET_MESSAGE__?: any;
+  }
+}
+
 test.describe('DualPaneSwap E2E', () => {
 
   test.beforeEach(async ({ page }) => {

@@ -83,7 +83,7 @@ describe('AmountInput', () => {
 
     it('shows Max button when cap and localized label are provided', () => {
       const { getByRole } = render(<AmountInput cap={100} maxChipLabel="Máximo" />)
-      expect(getByRole('button', { name: /max/i })).toBeInTheDocument()
+      expect(getByRole('button', { name: /Máximo/i })).toBeInTheDocument()
     })
 
     it('does not show Max button when maxChipLabel is missing', () => {
