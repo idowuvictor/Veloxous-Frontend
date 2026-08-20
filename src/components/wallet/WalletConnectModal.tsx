@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '../Button'
-import type { ModuleInterface } from '@creit.tech/stellar-wallets-kit'
+import type { ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
 
 interface WalletConnectModalProps {
   isOpen: boolean
   onClose: () => void
-  modules: ModuleInterface[]
+  modules: ISupportedWallet[]
   onConnect: (moduleId: string) => Promise<void>
   isConnecting: boolean
   connectingTo: string | null
@@ -29,13 +29,16 @@ export function WalletConnectModal({
 
   if (!mounted || !isOpen) return null
 
-  // Ensure Freighter, Albedo, xBull are prominent
-  const priorityWallets = ['freighter', 'albedo', 'xbull']
-  
+  // Sort: available wallets first, then by priority order
+  const priorityOrder = ['freighter', 'albedo', 'xbull']
+
   const sortedModules = [...modules].sort((a, b) => {
-    const aIndex = priorityWallets.indexOf(a.productId.toLowerCase())
-    const bIndex = priorityWallets.indexOf(b.productId.toLowerCase())
-    
+    // Available wallets come first
+    if (a.isAvailable && !b.isAvailable) return -1
+    if (!a.isAvailable && b.isAvailable) return 1
+    // Within same availability group, sort by priority
+    const aIndex = priorityOrder.indexOf(a.id.toLowerCase())
+    const bIndex = priorityOrder.indexOf(b.id.toLowerCase())
     if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
     if (aIndex !== -1) return -1
     if (bIndex !== -1) return 1
@@ -88,23 +91,12 @@ export function WalletConnectModal({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {sortedModules.map((m) => {
-            const isLoading = isConnecting && connectingTo === m.productId
-            
-            // Check if installed/supported based on kit logic, 
-            // some modules expose `isAvailable` but the kit typically just errors if not installed.
-            // We can provide a generic link if they fail, or just render the connect button.
-            const installLinks: Record<string, string> = {
-              freighter: 'https://www.freighter.app/',
-              xbull: 'https://xbull.app/',
-              albedo: 'https://albedo.link/',
-            }
-            
-            const link = installLinks[m.productId.toLowerCase()]
+          {sortedModules.map((wallet) => {
+            const isLoading = isConnecting && connectingTo === wallet.id
 
             return (
               <div
-                key={m.productId}
+                key={wallet.id}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -112,45 +104,50 @@ export function WalletConnectModal({
                   padding: 16,
                   borderRadius: 16,
                   border: '1px solid var(--ink-10, #e2e8f0)',
-                  transition: 'border-color 0.2s',
+                  opacity: wallet.isAvailable ? 1 : 0.6,
+                  transition: 'border-color 0.2s, opacity 0.2s',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {m.iconUrl && (
+                  {wallet.icon && (
                     <img
-                      src={m.iconUrl}
-                      alt={m.name}
+                      src={wallet.icon}
+                      alt={wallet.name}
                       style={{ width: 32, height: 32, borderRadius: 8 }}
                     />
                   )}
-                  <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>
-                    {m.name}
-                  </span>
+                  <div>
+                    <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', display: 'block' }}>
+                      {wallet.name}
+                    </span>
+                    {!wallet.isAvailable && (
+                      <span style={{ fontSize: 12, color: 'var(--ink-60)' }}>Not installed</span>
+                    )}
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    loading={isLoading}
-                    disabled={isConnecting}
-                    onClick={() => onConnect(m.productId)}
-                  >
-                    Connect
-                  </Button>
-                  
-                  {link && (
-                    <a 
-                      href={link} 
-                      target="_blank" 
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {wallet.isAvailable ? (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      loading={isLoading}
+                      disabled={isConnecting}
+                      onClick={() => onConnect(wallet.id)}
+                    >
+                      Connect
+                    </Button>
+                  ) : (
+                    <a
+                      href={wallet.url}
+                      target="_blank"
                       rel="noreferrer"
-                      style={{ 
-                        fontSize: 14, 
-                        color: 'var(--ink-60)', 
+                      style={{
+                        fontSize: 14,
+                        color: 'var(--ink-60)',
                         textDecoration: 'underline',
                         display: 'flex',
                         alignItems: 'center',
-                        marginLeft: 8
                       }}
                     >
                       Install
@@ -161,7 +158,7 @@ export function WalletConnectModal({
             )
           })}
         </div>
-        
+
         {isConnecting && (
           <div style={{ marginTop: 24, textAlign: 'center', color: 'var(--ink-60)', fontSize: 14 }}>
             Please approve the signature request in your wallet extension.

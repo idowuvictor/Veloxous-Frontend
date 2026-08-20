@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { ModuleInterface } from '@creit.tech/stellar-wallets-kit'
+import type { ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
 import { WalletConnectModal } from '../components/wallet/WalletConnectModal'
 
 /**
@@ -28,6 +28,10 @@ export interface WalletState {
 }
 
 interface WalletContextValue extends WalletState {
+  /** @alias isConnected — kept for backward compatibility */
+  connected: boolean
+  /** @alias publicKey — kept for backward compatibility */
+  address: string | null
   connect: () => void
   connectDemo: () => void
   disconnect: () => void
@@ -99,7 +103,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(walletReducer, initialState)
   const initedRef = useRef(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modules, setModules] = useState<ModuleInterface[]>([])
+  const [modules, setModules] = useState<ISupportedWallet[]>([])
   const [connectingTo, setConnectingTo] = useState<string | null>(null)
 
   const persist = useCallback((addr: string, walletId: string) => {
@@ -115,10 +119,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (initedRef.current) return
     const { StellarWalletsKit, Networks } = await import('@creit.tech/stellar-wallets-kit')
     const { defaultModules } = await import('@creit.tech/stellar-wallets-kit/modules/utils')
-    
+
     // Use testnet as default
     StellarWalletsKit.init({ modules: defaultModules(), network: Networks.TESTNET })
-    setModules(StellarWalletsKit.getModules())
+    // Fetch the list of supported wallets to populate the modal
+    const supported = await StellarWalletsKit.refreshSupportedWallets()
+    setModules(supported)
     initedRef.current = true
   }, [])
 
@@ -221,8 +227,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const { StellarWalletsKit, Networks } = await import('@creit.tech/stellar-wallets-kit')
       StellarWalletsKit.setWallet(moduleId)
-      
-      const { address } = await StellarWalletsKit.getPublicKey()
+
+      const { address } = await StellarWalletsKit.getAddress()
       
       // Attempt SEP-10 Auth
       const challengeRes = await fetch(`/api/auth/challenge?account=${address}`)
@@ -300,6 +306,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     <WalletContext.Provider
       value={{
         ...state,
+        // backward-compatible aliases
+        connected: state.isConnected,
+        address: state.publicKey,
         connect: openConnectModal,
         connectDemo,
         disconnect,
