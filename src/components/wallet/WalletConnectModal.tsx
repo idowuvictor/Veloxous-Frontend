@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '../Button'
-import { ModuleInterface } from '@creit.tech/stellar-wallets-kit'
+import type { ModuleInterface } from '@creit.tech/stellar-wallets-kit'
 
 interface WalletConnectModalProps {
   isOpen: boolean

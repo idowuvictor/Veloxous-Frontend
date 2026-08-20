@@ -12,9 +12,6 @@ import {
 } from 'react'
 import type { ModuleInterface } from '@creit.tech/stellar-wallets-kit'
 import { WalletConnectModal } from '../components/wallet/WalletConnectModal'
-// We might not have Toast ready here, so we will use a simple window alert or console for now,
-// or try to import it if it's available. The requirements mention "gentle toast notification".
-// I'll assume we can just use console error if Toast is too complex, or simple state.
 
 /**
  * Wallet state for Veloxous. Wraps the Stellar Wallets Kit (Freighter, xBull,
@@ -25,7 +22,7 @@ export interface WalletState {
   connecting: boolean
   publicKey: string | null
   walletType: string | null
-  network: 'TESTNET' | 'MAINNET'
+  network: 'TESTNET' | 'PUBLIC'
   isDemo: boolean
   error: string | null
 }
@@ -52,7 +49,7 @@ export type Action =
   | { type: 'CONNECTION_SUCCESS'; publicKey: string; walletType: string; isDemo?: boolean }
   | { type: 'CONNECTION_ERROR'; error: string }
   | { type: 'DISCONNECT' }
-  | { type: 'SET_NETWORK'; network: 'TESTNET' | 'MAINNET' }
+  | { type: 'SET_NETWORK'; network: 'TESTNET' | 'PUBLIC' }
   | { type: 'CLEAR_ERROR' }
 
 export function walletReducer(state: WalletState, action: Action): WalletState {
@@ -125,6 +122,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     initedRef.current = true
   }, [])
 
+  const disconnect = useCallback(() => {
+    dispatch({ type: 'DISCONNECT' })
+    try {
+      localStorage.removeItem('hb-address')
+      localStorage.removeItem('hb-wallet')
+    } catch {
+      /* ignore */
+    }
+
+    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+
+    void import('@creit.tech/stellar-wallets-kit')
+      .then(({ StellarWalletsKit }) => StellarWalletsKit.disconnect())
+      .catch(() => {})
+  }, [])
+
   // Check for expired token / 401s from API
   useEffect(() => {
     const handleAuthExpired = () => {
@@ -133,11 +146,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
     window.addEventListener('auth-expired', handleAuthExpired)
     return () => window.removeEventListener('auth-expired', handleAuthExpired)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [disconnect])
 
   // Account change listener (Freighter)
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: ReturnType<typeof setInterval>
     
     if (state.isConnected && !state.isDemo && state.walletType === 'freighter') {
       // Poll for active account changes as Freighter doesn't provide a reliable standard event
@@ -178,7 +191,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     dispatch({
       type: 'CONNECTION_SUCCESS',
       publicKey: saved,
-      walletType: savedWallet,
+      walletType: savedWallet ?? 'wallet',
       isDemo: savedWallet === 'demo',
     })
 
@@ -223,7 +236,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       let signedTx = ''
       try {
         const signResult = await StellarWalletsKit.signTransaction(challengeData.transaction, {
-           networkPassphrase: Networks[state.network]
+           networkPassphrase: state.network === 'PUBLIC' ? Networks.PUBLIC : Networks.TESTNET,
+           address: address,
         })
         signedTx = signResult.signedTxXdr
       } catch (err: any) {
@@ -274,29 +288,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       await ensureInit()
       const { StellarWalletsKit, Networks } = await import('@creit.tech/stellar-wallets-kit')
       const result = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: Networks[state.network],
+        networkPassphrase: state.network === 'PUBLIC' ? Networks.PUBLIC : Networks.TESTNET,
         address: state.publicKey,
       })
       return result.signedTxXdr
     },
     [state.isDemo, state.publicKey, state.network, ensureInit],
   )
-
-  const disconnect = useCallback(() => {
-    dispatch({ type: 'DISCONNECT' })
-    try {
-      localStorage.removeItem('hb-address')
-      localStorage.removeItem('hb-wallet')
-    } catch {
-      /* ignore */
-    }
-    
-    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
-
-    void import('@creit.tech/stellar-wallets-kit')
-      .then(({ StellarWalletsKit }) => StellarWalletsKit.disconnect())
-      .catch(() => {})
-  }, [])
 
   return (
     <WalletContext.Provider
